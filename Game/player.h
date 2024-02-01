@@ -1,5 +1,6 @@
 #pragma once
 #include "item.h"
+#include <iostream>
 
 class Attributes
 {
@@ -24,7 +25,7 @@ class Player : public Attributes
 	std::vector<Item> inventory;
 
 	void checkState();
-	Player& die();
+	void die();
 public:
 	Player();
 	Player(int id, std::string name, int max_hp, int hp, int damage);

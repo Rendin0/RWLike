@@ -43,10 +43,9 @@ Player& Player::takeDamage(int value)
 	return *this;
 }
 
-Player& Player::die()
+void Player::die()
 {
-	printf("You lose");
-	return *this;
+	std::cout << name << " lose.\n";
 }
 
 void Player::checkState()
