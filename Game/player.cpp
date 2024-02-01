@@ -30,6 +30,7 @@ Attributes::Attributes(int max_hp, int hp, int damage)
 Player& Player::takeDamage()
 {
 	hp--;
+	std::cout << "Ouch!\n";
 	checkState();
 
 	return *this;
@@ -38,6 +39,7 @@ Player& Player::takeDamage()
 Player& Player::takeDamage(int value)
 {
 	hp -= value;
+	std::cout << "Ouch!\n";
 	checkState();
 
 	return *this;

@@ -7,10 +7,7 @@ int main()
 {
 	std::cout << "Hello" << std::endl;
 
-
-	Player p1;
-
-
+	Player p1(0, "Good man", 3, 3, 5);
 
 	return 0;
 }
