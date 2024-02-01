@@ -2,6 +2,22 @@
 #include <vector>
 #include <string>
 
+class Attribute
+{
+	std::string name;
+
+	int id;
+
+	static int total_attributes;
+public:
+	Attribute();
+	Attribute(std::string name);
+
+	std::string getName();
+	
+	int getId();
+};
+
 class Item
 {
 	std::string name;
@@ -22,20 +38,4 @@ public:
 
 	int getId();
 	int getType();
-};
-
-class Attribute
-{
-	std::string name;
-
-	int id;
-
-	static int total_attributes;
-public:
-	Attribute();
-	Attribute(std::string name);
-
-	std::string getName();
-	
-	int getId();
 };
