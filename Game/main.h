@@ -1,3 +1,5 @@
 #pragma once
-#include "player.h"
+#include "game.h"
 #include <ctime>
+#include <conio.h>
+
