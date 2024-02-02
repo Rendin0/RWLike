@@ -11,7 +11,9 @@ int main()
 
 	int top_pos = 8, left_pos = 20, length = 96, width = 20;
 
-	gameBoxPrint(top_pos, left_pos, length, width);
+	GameBox gb(top_pos, left_pos, length, width);
+
+	gb.gameBoxPrint();
 	setCursorPosition(top_pos + (width / 2), left_pos + (length / 2));
 	std::cout << 'P';
 
@@ -44,7 +46,7 @@ int main()
 			}
 
 
-			movePlayer('P', 1, dir);
+			gb.movePlayer('P', 1, dir);
 
 		}
 	}
