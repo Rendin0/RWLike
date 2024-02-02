@@ -6,7 +6,7 @@ int Attribute::total_attributes = 0;
 int main()
 {
 	system("chcp 1251");
-	hideCursor();
+	//hideCursor();
 	system("cls");
 
 	int top_pos = 8, left_pos = 20, length = 96, width = 20;
@@ -14,8 +14,8 @@ int main()
 	GameBox gb(top_pos, left_pos, length, width);
 
 	COORD p_pos;
-	p_pos.X = top_pos + width / 2;
-	p_pos.Y = left_pos + length / 2;
+	p_pos.X = top_pos + length / 2;
+	p_pos.Y = left_pos + width / 2;
 	gb.setPlayerPosition(p_pos);
 
 
@@ -57,6 +57,7 @@ int main()
 				dir = 'B';
 				break;
 			default:
+				continue;
 				break;
 			}
 

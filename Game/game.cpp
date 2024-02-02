@@ -10,7 +10,7 @@ public:
 	{
 		::SetConsoleCP(CP_WINUNICODE);
 		::SetConsoleOutputCP(CP_WINUNICODE);
-	} 
+	}
 	~output_swap() noexcept {
 		::SetConsoleCP(prevCP_);
 		::SetConsoleOutputCP(prevCP_);
@@ -54,8 +54,10 @@ void setCursorPosition(COORD cords)
 void GameBox::gameBoxPrint()
 {
 	COORD tmp_cords;
+	tmp_cords.X = cords.X - 1;
+	tmp_cords.Y = cords.Y - 1;
 
-	setCursorPosition(cords);
+	setCursorPosition(tmp_cords);
 
 	draw_text(L"┌");
 	for (int i = 0; i <= length + 1; i++)
@@ -66,7 +68,7 @@ void GameBox::gameBoxPrint()
 	for (int i = 1; i <= width + 1; i++)
 	{
 		tmp_cords.Y = cords.Y + i - 1;
-		tmp_cords.Y = cords.X - 1;
+		tmp_cords.X = cords.X - 1;
 		setCursorPosition(tmp_cords);
 		draw_text(L"│");
 		for (int i = 0; i <= length + 1; i++)
@@ -100,13 +102,20 @@ void GameBox::movePlayer(char player, int amount, char dir, int dir_int, int dir
 	DWORD dw = 1;
 	LPDWORD lpdword = &dw;
 
-	player_cords.X += (!dir_int * dir_mod);
-	player_cords.X += (dir_int * dir_mod);
+	COORD checking_cords;
 
-	ReadConsoleOutputCharacter(hCon, lpt, 1, player_cords, lpdword);
+	checking_cords.Y = player_cords.Y + (dir_mod * !dir_int);
+	checking_cords.X = player_cords.X + (dir_mod);
 
-	std::cout << lpt;
+	ReadConsoleOutputCharacter(hCon, lpt, -1, checking_cords, lpdword);
 
+	if (*lpt != 32)
+	{
+		return;
+	}
+
+	player_cords.X = player_cords.X + (dir_mod);
+	player_cords.Y = player_cords.Y + (dir_mod * !dir_int);
 	std::cout << "\u001b[1D \u001b[1D\u001b[" << amount << dir << player;
 }
 
