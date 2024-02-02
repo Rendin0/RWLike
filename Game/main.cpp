@@ -13,8 +13,15 @@ int main()
 
 	GameBox gb(top_pos, left_pos, length, width);
 
+	COORD p_pos;
+	p_pos.X = top_pos + width / 2;
+	p_pos.Y = left_pos + length / 2;
+	gb.setPlayerPosition(p_pos);
+
+
+
 	gb.gameBoxPrint();
-	setCursorPosition(top_pos + (width / 2), left_pos + (length / 2));
+	setCursorPosition(gb.getPlayerCords());
 	std::cout << 'P';
 
 	while (true)
@@ -22,22 +29,30 @@ int main()
 		if (_kbhit())
 		{
 			_getch();
-			int dir_int = _getch();
+			int dir_int = _getch(), dir_mod;
 			char dir = 'A';
 
 			switch (dir_int)
 			{
 			case 72:
 				Sleep(50);
+				dir_int = 0;
+				dir_mod = -1;
 				dir = 'A';
 				break;
 			case 75:
 				dir = 'D';
+				dir_int = 1;
+				dir_mod = -1;
 				break;
 			case 77:
+				dir_int = 1;
+				dir_mod = 1;
 				dir = 'C';
 				break;
 			case 80:
+				dir_int = 0;
+				dir_mod = 1;
 				Sleep(50);
 				dir = 'B';
 				break;
@@ -46,7 +61,7 @@ int main()
 			}
 
 
-			gb.movePlayer('P', 1, dir);
+			gb.movePlayer('P', 1, dir, dir_int, dir_mod);
 
 		}
 	}

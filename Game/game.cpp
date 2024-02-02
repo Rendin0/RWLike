@@ -28,28 +28,34 @@ void draw_text(const wchar_t* text)
 
 GameBox::GameBox()
 {
-	left_pos = 0;
-	top_pos = 0;
+	cords.X = 0;
+	cords.Y = 0;
 	length = 10;
 	width = 10;
+	player_cords.X = 0;
+	player_cords.Y = 0;
 }
 
 GameBox::GameBox(int top_pos, int left_pos, int length, int width)
 {
-	this->top_pos = top_pos;
-	this->left_pos = left_pos;
+	this->cords.Y = top_pos;
+	this->cords.X = left_pos;
 	this->length = length;
 	this->width = width;
+	player_cords.X = 0;
+	player_cords.Y = 0;
 }
 
-void setCursorPosition(int top_pos, int left_pos)
+void setCursorPosition(COORD cords)
 {
-	std::cout << "\u001b[" << top_pos << ";" << left_pos << "H";
+	std::cout << "\u001b[" << cords.Y << ";" << cords.X << "H";
 }
 
 void GameBox::gameBoxPrint()
 {
-	setCursorPosition(top_pos - 1, left_pos - 1);
+	COORD tmp_cords;
+
+	setCursorPosition(cords);
 
 	draw_text(L"┌");
 	for (int i = 0; i <= length + 1; i++)
@@ -59,7 +65,9 @@ void GameBox::gameBoxPrint()
 	draw_text(L"┐");
 	for (int i = 1; i <= width + 1; i++)
 	{
-		setCursorPosition(top_pos + i - 1, left_pos - 1);
+		tmp_cords.Y = cords.Y + i - 1;
+		tmp_cords.Y = cords.X - 1;
+		setCursorPosition(tmp_cords);
 		draw_text(L"│");
 		for (int i = 0; i <= length + 1; i++)
 		{
@@ -67,7 +75,10 @@ void GameBox::gameBoxPrint()
 		}
 		draw_text(L"│");
 	}
-	setCursorPosition(top_pos + width, left_pos - 1);
+
+	tmp_cords.X = cords.X - 1;
+	tmp_cords.Y = cords.Y + width;
+	setCursorPosition(tmp_cords);
 	draw_text(L"└");
 	for (int i = 0; i <= length + 1; i++)
 	{
@@ -81,18 +92,31 @@ void hideCursor()
 	std::cout << "\u001b[?25l";
 }
 
-void GameBox::movePlayer(char player, int amount, char dir)
+void GameBox::movePlayer(char player, int amount, char dir, int dir_int, int dir_mod)
 {
 	HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
-	LPTSTR lpt;
-	COORD cord;
+	TCHAR tch = ' ';
+	LPTSTR lpt = &tch;
 	DWORD dw = 1;
 	LPDWORD lpdword = &dw;
-	cord.X = 0;
-	cord.Y = 0;
 
+	player_cords.X += (!dir_int * dir_mod);
+	player_cords.X += (dir_int * dir_mod);
 
-	ReadConsoleOutputCharacter(hCon, lpt, 1, cord, lpdword);
+	ReadConsoleOutputCharacter(hCon, lpt, 1, player_cords, lpdword);
+
+	std::cout << lpt;
 
 	std::cout << "\u001b[1D \u001b[1D\u001b[" << amount << dir << player;
+}
+
+COORD GameBox::getPlayerCords()
+{
+	return player_cords;
+}
+
+GameBox& GameBox::setPlayerPosition(COORD cords)
+{
+	player_cords = cords;
+	return *this;
 }
