@@ -83,5 +83,16 @@ void hideCursor()
 
 void GameBox::movePlayer(char player, int amount, char dir)
 {
+	HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
+	LPTSTR lpt;
+	COORD cord;
+	DWORD dw = 1;
+	LPDWORD lpdword = &dw;
+	cord.X = 0;
+	cord.Y = 0;
+
+
+	ReadConsoleOutputCharacter(hCon, lpt, 1, cord, lpdword);
+
 	std::cout << "\u001b[1D \u001b[1D\u001b[" << amount << dir << player;
 }
