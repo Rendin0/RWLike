@@ -2,8 +2,8 @@
 
 GameBox::GameBox()
 {
-	cords.setX(0);
-	cords.setY(0);
+	x = 0;
+	y = 0;
 	length = 10;
 	width = 10;
 	field = {};
@@ -11,8 +11,8 @@ GameBox::GameBox()
 
 GameBox::GameBox(int top_pos, int left_pos, short length, short width)
 {
-	this->cords.setY(top_pos);
-	this->cords.setX(left_pos);
+	this->y =top_pos;
+	this->x = left_pos;
 	this->length = length;
 	this->width = width;
 
@@ -50,7 +50,7 @@ void setCursorPosition(Cords cords)
 
 void GameBox::gameBoxPrint()
 {
-	setCursorPosition(cords);
+	setCursorPosition(Cords(x, y));
 
 	for (int i = 0; i < field.size() - 1; i++)
 	{
@@ -58,7 +58,7 @@ void GameBox::gameBoxPrint()
 		{
 			std::wcout << field.at(i).at(j);
 		}
-		setCursorPosition(Cords(cords.getX(), cords.getY() + i + 1));
+		setCursorPosition(Cords(x, y + i + 1));
 	}
 	for (int i = 0; i < field.at(field.size() - 1).size(); i++)
 	{
@@ -86,7 +86,7 @@ Game& Game::addObject(Cords cords, wchar_t obj)
 	if (field.at(cords.getY()).at(cords.getX()) != p1->getIcon())
 	{
 		field.at(cords.getY()).at(cords.getX()) = obj;
-		setCursorPosition(Cords(cords.getX() + this->cords.getX(), cords.getY() + this->cords.getY()));
+		setCursorPosition(Cords(cords.getX() + this->x, cords.getY() + this->y));
 		std::wcout << obj;
 	}
 	return *this;
@@ -138,14 +138,14 @@ Game& Game::createPlayer(Cords cords,int id, wchar_t icon, int max_hp, int hp, i
 	p1 = new Player(id, icon, max_hp, hp, damage);
 	p1->setCords(cords);
 
-	field.at(p1->getCords().getY()).at(p1->getCords().getX()) = p1->getIcon();
+	field.at(p1->getY()).at(p1->getX()) = p1->getIcon();
 
 	return *this;
 }
 
 Game& Game::movePlayer(wchar_t dir, short amount)
 {
-	Cords previous_player_cords(p1->getX() + cords.getX(), p1->getY() + cords.getY());
+	Cords previous_player_cords(p1->getX() + x, p1->getY() + y);
 	switch (dir)
 	{
 	case L'A':

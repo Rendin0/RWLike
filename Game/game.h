@@ -3,10 +3,9 @@
 #include <fcntl.h>
 #include <conio.h>
 
-class GameBox
+class GameBox : public Cords
 {
 protected:
-	Cords cords;
 	short length;
 	short width;
 	std::vector<std::vector<wchar_t>> field;
