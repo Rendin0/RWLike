@@ -5,16 +5,12 @@ Player::Player()
 	id = 0;
 	icon = L'P';
 	inventory = {};
-	player_cords.X = 1;
-	player_cords.Y = 1;
 }
 
 Player::Player(int id, wchar_t icon, int max_hp, int hp, int damage) : Attributes(max_hp, hp, damage)
 {
 	this->id = id;
 	this->icon = icon;
-	player_cords.X = 1;
-	player_cords.Y = 1;
 }
 
 Attributes::Attributes()
@@ -49,14 +45,15 @@ Player& Player::takeDamage(int value)
 	return *this;
 }
 
-COORD Player::getCords()
+Cords Player::getCords()
 {
-	return player_cords;
+	return Cords(x, y);
 }
 
-Player& Player::setCords(COORD cords)
+Player& Player::setCords(Cords cords)
 {
-	player_cords = cords;
+	x = cords.getX();
+	y = cords.getY();
 	return *this;
 }
 

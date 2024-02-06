@@ -1,5 +1,6 @@
 #pragma once
 #include "item.h"
+#include "cords.h"
 #include <iostream>
 #include <windows.h>
 
@@ -18,11 +19,12 @@ public:
 	
 };
 
-class Player : public Attributes
+
+
+class Player : public Attributes, public Cords
 {
 	wchar_t icon;
 	int id;
-	COORD player_cords;
 
 	std::vector<Item> inventory;
 
@@ -32,8 +34,8 @@ public:
 	Player();
 	Player(int id, wchar_t icon, int max_hp, int hp, int damage);
 
-	COORD getCords();
-	Player& setCords(COORD cords);
+	Cords getCords();
+	Player& setCords(Cords cords);
 
 	wchar_t getIcon();
 	Player& setIcon(wchar_t icon);
