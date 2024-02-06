@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 class Cords
 {
 
@@ -17,3 +19,5 @@ public:
 
 	Cords& setCords(int x, int y);
 };
+
+void setCursorPosition(Cords cords);

@@ -27,11 +27,42 @@ Attributes::Attributes(int max_hp, int hp, int damage)
 	this->damage = damage;
 }
 
+int Attributes::getMaxHp()
+{
+	return max_hp;
+}
+
+int Attributes::getHp()
+{
+	return hp;
+}
+
+int Attributes::getDamage()
+{
+	return damage;
+}
+
+Attributes& Attributes::setMaxHp(int max_hp)
+{
+	this->max_hp = max_hp;
+	return *this;
+}
+
+Attributes& Attributes::setHp(int hp)
+{
+	this->hp = hp;
+	return *this;
+}
+
+Attributes& Attributes::setDamage(int damage)
+{
+	this->damage = damage;
+	return *this;
+}
+
 Player& Player::takeDamage()
 {
-	hp--;
-	std::cout << "Ouch!\n";
-	checkState();
+	takeDamage(1);
 
 	return *this;
 }
@@ -39,8 +70,24 @@ Player& Player::takeDamage()
 Player& Player::takeDamage(int value)
 {
 	hp -= value;
-	std::cout << "Ouch!\n";
-	checkState();
+	std::wcout << L"\u001b[41m";
+	if (!checkState())
+	{
+		Sleep(200);
+		std::wcout << L"\u001b[1D\u001b[0m";
+		Sleep(100);
+	}
+
+	return *this;
+}
+
+Player& Player::printInfo()
+{
+	setCursorPosition(Cords(1, 1));
+
+	std::wcout << "HP: " << hp << "/" << max_hp;
+	setCursorPosition(Cords(1, 2));
+	std::wcout << "Damage: " << damage;
 
 	return *this;
 }
@@ -70,11 +117,17 @@ Player& Player::setIcon(wchar_t icon)
 
 void Player::die()
 {
-	std::wcout << icon << " lose.\n";
+	setCursorPosition(Cords(55, 1));
+	std::wcout << L"You (" << icon << L") lose.\n";
 }
 
-void Player::checkState()
+bool Player::checkState()
 {
+	printInfo();
 	if (hp <= 0)
+	{
 		die();
+		return 1;
+	}
+	return 0;
 }

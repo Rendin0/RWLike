@@ -40,3 +40,8 @@ Cords& Cords::setCords(int x, int y)
 	this->y = y;
 	return *this;
 }
+
+void setCursorPosition(Cords cords)
+{
+	std::wcout << L"\u001b[" << cords.getY() << L";" << cords.getX() << L"H";
+}

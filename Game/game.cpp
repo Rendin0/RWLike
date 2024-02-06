@@ -11,7 +11,7 @@ GameBox::GameBox()
 
 GameBox::GameBox(int top_pos, int left_pos, short length, short width)
 {
-	this->y =top_pos;
+	this->y = top_pos;
 	this->x = left_pos;
 	this->length = length;
 	this->width = width;
@@ -43,10 +43,6 @@ GameBox::GameBox(int top_pos, int left_pos, short length, short width)
 	field.at(field.size() - 1).push_back(L'┘');
 }
 
-void setCursorPosition(Cords cords)
-{
-	std::wcout << L"\u001b[" << cords.getY() << L";" << cords.getX() << L"H";
-}
 
 void GameBox::gameBoxPrint()
 {
@@ -71,13 +67,31 @@ void hideCursor()
 	std::wcout << L"\u001b[?25l";
 }
 
+Game& Game::playerCollide(wchar_t obj)
+{
+	switch (obj)
+	{
+	case L'+':
+		p1->takeDamage();
+		break;
+	default:
+		break;
+	}
+
+	if (p1->checkState())
+		takeControls();
+	return *this;
+}
+
 Game::Game()
 {
+	have_controls = false;
 	p1 = nullptr;
 }
 
 Game::Game(int top_pos, int left_pos, short length, short width) : GameBox(top_pos, left_pos, length, width)
 {
+	have_controls = false;
 	p1 = nullptr;
 }
 
@@ -92,7 +106,14 @@ Game& Game::addObject(Cords cords, wchar_t obj)
 	return *this;
 }
 
-Game& Game::giveControls(bool& have_controls)
+Game& Game::moveObject(Cords new_cords, Cords old_cords)
+{
+	field.at(new_cords.getY()).at(new_cords.getX()) = field.at(old_cords.getY()).at(old_cords.getX());
+	field.at(old_cords.getY()).at(old_cords.getX()) = L' ';
+	return *this;
+}
+
+Game& Game::giveControls()
 {
 	have_controls = true;
 	while (have_controls)
@@ -124,13 +145,13 @@ Game& Game::giveControls(bool& have_controls)
 	return *this;
 }
 
-Game& Game::takeControls(bool& have_controls)
+Game& Game::takeControls()
 {
 	have_controls = false;
 	return *this;
 }
 
-Game& Game::createPlayer(Cords cords,int id, wchar_t icon, int max_hp, int hp, int damage)
+Game& Game::createPlayer(Cords cords, int id, wchar_t icon, int max_hp, int hp, int damage)
 {
 	if (p1 != nullptr)
 		return *this;
@@ -139,6 +160,8 @@ Game& Game::createPlayer(Cords cords,int id, wchar_t icon, int max_hp, int hp, i
 	p1->setCords(cords);
 
 	field.at(p1->getY()).at(p1->getX()) = p1->getIcon();
+
+	p1->printInfo();
 
 	return *this;
 }
@@ -150,41 +173,45 @@ Game& Game::movePlayer(wchar_t dir, short amount)
 	{
 	case L'A':
 		if (field.at(p1->getY() - amount).at(p1->getX()) != L' ')
-			return *this;
+		{
+			return playerCollide(field.at(p1->getY() - amount).at(p1->getX()));
+		}
 
-		field.at(p1->getY() - amount).at(p1->getX()) = p1->getIcon();
-		field.at(p1->getY()).at(p1->getX()) = L' ';
+		moveObject(Cords(p1->getX(), p1->getY() - amount), Cords(p1->getX(), p1->getY()));
 
 		p1->setCords(Cords(p1->getX(), p1->getY() - amount));
 
 		break;
 	case L'B':
 		if (field.at(p1->getY() + amount).at(p1->getX()) != L' ')
-			return *this;
+		{
+			return playerCollide(field.at(p1->getY() + amount).at(p1->getX()));
+		}
 
-		field.at(p1->getY() + amount).at(p1->getX()) = p1->getIcon();
-		field.at(p1->getY()).at(p1->getX()) = L' ';
+		moveObject(Cords(p1->getX(), p1->getY() + amount), Cords(p1->getX(), p1->getY()));
 
 		p1->setCords(Cords(p1->getX(), p1->getY() + amount));
 
 		break;
 	case L'C':
 		if (field.at(p1->getY()).at(p1->getX() + amount) != L' ')
-			return *this;
+		{
+			return playerCollide(field.at(p1->getY()).at(p1->getX() + amount));
+		}
 
-		field.at(p1->getY()).at(p1->getX() + amount) = p1->getIcon();
-		field.at(p1->getY()).at(p1->getX()) = L' ';
+		moveObject(Cords(p1->getX() + amount, p1->getY()), Cords(p1->getX(), p1->getY()));
 
 		p1->setCords(Cords(p1->getX() + amount, p1->getY()));
 
 		break;
 	case L'D':
 		if (field.at(p1->getY()).at(p1->getX() - amount) != L' ')
-			return *this;
+		{
+			return playerCollide(field.at(p1->getY()).at(p1->getX() - amount));
+		}
 
-		field.at(p1->getY()).at(p1->getX() - amount) = p1->getIcon();
-		field.at(p1->getY()).at(p1->getX()) = L' ';
-
+		moveObject(Cords(p1->getX() - amount, p1->getY()), Cords(p1->getX(), p1->getY()));
+		
 		p1->setCords(Cords(p1->getX() - amount, p1->getY()));
 
 		break;

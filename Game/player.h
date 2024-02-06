@@ -1,7 +1,6 @@
 #pragma once
 #include "item.h"
 #include "cords.h"
-#include <iostream>
 #include <windows.h>
 
 
@@ -16,7 +15,14 @@ protected:
 	Attributes();
 	Attributes(int max_hp, int hp, int damage);
 public:
-	
+	int getMaxHp();
+	int getHp();
+	int getDamage();
+
+	Attributes& setMaxHp(int max_hp);
+	Attributes& setHp(int hp);
+	Attributes& setDamage(int damage);
+
 };
 
 
@@ -28,9 +34,9 @@ class Player : public Attributes, public Cords
 
 	std::vector<Item> inventory;
 
-	void checkState();
 	void die();
 public:
+	bool checkState();
 	Player();
 	Player(int id, wchar_t icon, int max_hp, int hp, int damage);
 
@@ -43,4 +49,5 @@ public:
 	Player& takeDamage();
 	Player& takeDamage(int value);
 
+	Player& printInfo();
 };

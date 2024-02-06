@@ -17,20 +17,23 @@ public:
 };
 
 void hideCursor();
-void setCursorPosition(Cords cords);
 
 class Game : public GameBox
 {
+	bool have_controls;
 	Player* p1;
+
+	Game& playerCollide(wchar_t obj);
 
 public:
 	Game();
 	Game(int top_pos, int left_pos, short length, short width);
 
 	Game& addObject(Cords cords, wchar_t obj);
+	Game& moveObject(Cords new_cords, Cords old_cords);
 
-	Game& giveControls(bool& have_controls);
-	Game& takeControls(bool& have_controls);
+	Game& giveControls();
+	Game& takeControls();
 
 	Game& createPlayer(Cords cords, int id, wchar_t icon, int max_hp, int hp, int damage);
 
