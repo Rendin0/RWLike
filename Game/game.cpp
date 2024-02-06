@@ -1,39 +1,12 @@
 ﻿#include "game.h"
 
-
-class output_swap {
-	output_swap(const output_swap&) = delete;
-	output_swap operator=(output_swap&) = delete;
-public:
-	output_swap() noexcept :
-		prevCP_(::GetConsoleCP())
-	{
-		::SetConsoleCP(CP_WINUNICODE);
-		::SetConsoleOutputCP(CP_WINUNICODE);
-	}
-	~output_swap() noexcept {
-		::SetConsoleCP(prevCP_);
-		::SetConsoleOutputCP(prevCP_);
-	}
-private:
-	::DWORD prevCP_;
-};
-
-void draw_text(const wchar_t* text)
-{
-	static ::HANDLE _out = ::GetStdHandle(STD_OUTPUT_HANDLE);
-	::DWORD written;
-	::WriteConsoleW(_out, text, std::wcslen(text), &written, nullptr);
-}
-
 GameBox::GameBox()
 {
 	cords.X = 0;
 	cords.Y = 0;
 	length = 10;
 	width = 10;
-	player_cords.X = 0;
-	player_cords.Y = 0;
+	field = {};
 }
 
 GameBox::GameBox(int top_pos, int left_pos, int length, int width)
@@ -42,90 +15,189 @@ GameBox::GameBox(int top_pos, int left_pos, int length, int width)
 	this->cords.X = left_pos;
 	this->length = length;
 	this->width = width;
-	player_cords.X = 0;
-	player_cords.Y = 0;
+
+	field.push_back({});
+	field.at(0).push_back(L'┌');
+	for (int i = 1; i < length - 1; i++)
+	{
+		field.at(0).push_back(L'─');
+	}
+	field.at(0).push_back(L'┐');
+
+	for (int i = 1; i < width - 1; i++)
+	{
+		field.push_back({});
+		field.at(i).push_back(L'│');
+		for (int j = 1; j < length - 1; j++)
+		{
+			field.at(i).push_back(L' ');
+		}
+		field.at(i).push_back(L'│');
+	}
+	field.push_back({});
+	field.at(field.size() - 1).push_back(L'└');
+	for (int i = 1; i < length - 1; i++)
+	{
+		field.at(field.size() - 1).push_back(L'─');
+	}
+	field.at(field.size() - 1).push_back(L'┘');
 }
 
 void setCursorPosition(COORD cords)
 {
-	std::cout << "\u001b[" << cords.Y << ";" << cords.X << "H";
+	std::wcout << L"\u001b[" << cords.Y << L";" << cords.X << L"H";
 }
 
 void GameBox::gameBoxPrint()
 {
-	COORD tmp_cords;
-	tmp_cords.X = cords.X - 1;
-	tmp_cords.Y = cords.Y - 1;
+	setCursorPosition(cords);
+	COORD tmp_cord;
 
-	setCursorPosition(tmp_cords);
 
-	draw_text(L"┌");
-	for (int i = 0; i <= length + 1; i++)
+	for (int i = 0; i < field.size() - 1; i++)
 	{
-		draw_text(L"─");
-	}
-	draw_text(L"┐");
-	for (int i = 1; i <= width + 1; i++)
-	{
-		tmp_cords.Y = cords.Y + i - 1;
-		tmp_cords.X = cords.X - 1;
-		setCursorPosition(tmp_cords);
-		draw_text(L"│");
-		for (int i = 0; i <= length + 1; i++)
+		for (int j = 0; j < field.at(i).size(); j++)
 		{
-			std::cout << " ";
+			std::wcout << field.at(i).at(j);
 		}
-		draw_text(L"│");
+		tmp_cord.X = cords.X;
+		tmp_cord.Y = cords.Y + i + 1;
+		setCursorPosition(tmp_cord);
 	}
-
-	tmp_cords.X = cords.X - 1;
-	tmp_cords.Y = cords.Y + width;
-	setCursorPosition(tmp_cords);
-	draw_text(L"└");
-	for (int i = 0; i <= length + 1; i++)
+	for (int i = 0; i < field.at(field.size() - 1).size(); i++)
 	{
-		draw_text(L"─");
+		std::wcout << field.at(field.size() - 1).at(i);
 	}
-	draw_text(L"┘");
 }
 
 void hideCursor()
 {
-	std::cout << "\u001b[?25l";
+	std::wcout << L"\u001b[?25l";
 }
 
-void GameBox::movePlayer(char player, int amount, char dir, int dir_int, int dir_mod)
+Game::Game()
 {
-	HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
-	TCHAR tch = ' ';
-	LPTSTR lpt = &tch;
-	DWORD dw = 1;
-	LPDWORD lpdword = &dw;
+	p1 = nullptr;
+}
 
-	COORD checking_cords;
+Game::Game(int top_pos, int left_pos, int length, int width) : GameBox(top_pos, left_pos, length, width)
+{
+	p1 = nullptr;
+}
 
-	checking_cords.Y = player_cords.Y + (dir_mod * !dir_int);
-	checking_cords.X = player_cords.X + (dir_mod);
-
-	ReadConsoleOutputCharacter(hCon, lpt, -1, checking_cords, lpdword);
-
-	if (*lpt != 32)
+Game& Game::giveControls(bool& have_controls)
+{
+	have_controls = true;
+	while (have_controls)
 	{
-		return;
+		if (_kbhit())
+		{
+			int dir = _getch();
+
+			switch (dir)
+			{
+			case 72:
+				movePlayer('A', 1);
+				break;
+			case 75:
+				movePlayer('D', 1);
+				break;
+			case 77:
+				movePlayer('C', 1);
+				break;
+			case 80:
+				movePlayer('B', 1);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
-	player_cords.X = player_cords.X + (dir_mod);
-	player_cords.Y = player_cords.Y + (dir_mod * !dir_int);
-	std::cout << "\u001b[1D \u001b[1D\u001b[" << amount << dir << player;
-}
-
-COORD GameBox::getPlayerCords()
-{
-	return player_cords;
-}
-
-GameBox& GameBox::setPlayerPosition(COORD cords)
-{
-	player_cords = cords;
 	return *this;
+}
+
+Game& Game::takeControls(bool& have_controls)
+{
+	have_controls = false;
+	return *this;
+}
+
+Game& Game::createPlayer(int id, wchar_t icon, int max_hp, int hp, int damage)
+{
+	if (p1 != nullptr)
+		return *this;
+
+	p1 = new Player(id, icon, max_hp, hp, damage);
+
+	field.at(p1->getCords().Y).at(p1->getCords().X) = p1->getIcon();
+
+	return *this;
+}
+
+Game& Game::movePlayer(wchar_t dir, short amount)
+{
+	COORD tmp_cord = { p1->getCords().X + cords.X, p1->getCords().Y + cords.Y };
+	COORD tmp_cord2;
+	switch (dir)
+	{
+	case L'A':
+		if (field.at(p1->getCords().Y - amount).at(p1->getCords().X) != L' ')
+			return *this;
+
+		field.at(p1->getCords().Y - amount).at(p1->getCords().X) = p1->getIcon();
+		field.at(p1->getCords().Y).at(p1->getCords().X) = L' ';
+
+		tmp_cord2.Y = p1->getCords().Y - amount;
+		tmp_cord2.X = p1->getCords().X;
+		p1->setCords(tmp_cord2);
+
+		break;
+	case L'B':
+		if (field.at(p1->getCords().Y + amount).at(p1->getCords().X) != L' ')
+			return *this;
+
+		field.at(p1->getCords().Y + amount).at(p1->getCords().X) = p1->getIcon();
+		field.at(p1->getCords().Y).at(p1->getCords().X) = L' ';
+
+		tmp_cord2.Y = p1->getCords().Y + amount;
+		tmp_cord2.X = p1->getCords().X;
+		p1->setCords(tmp_cord2);
+
+		break;
+	case L'C':
+		if (field.at(p1->getCords().Y).at(p1->getCords().X + amount) != L' ')
+			return *this;
+
+		field.at(p1->getCords().Y).at(p1->getCords().X + amount) = p1->getIcon();
+		field.at(p1->getCords().Y).at(p1->getCords().X) = L' ';
+
+		tmp_cord2.Y = p1->getCords().Y;
+		tmp_cord2.X = p1->getCords().X + amount;
+		p1->setCords(tmp_cord2);
+
+		break;
+	case L'D':
+		if (field.at(p1->getCords().Y).at(p1->getCords().X - amount) != L' ')
+			return *this;
+
+		field.at(p1->getCords().Y).at(p1->getCords().X - amount) = p1->getIcon();
+		field.at(p1->getCords().Y).at(p1->getCords().X) = L' ';
+
+		tmp_cord2.Y = p1->getCords().Y;
+		tmp_cord2.X = p1->getCords().X - amount;
+		p1->setCords(tmp_cord2);
+
+		break;
+	}
+
+	setCursorPosition(tmp_cord);
+
+	std::wcout << L" \u001b[1D\u001b[" << amount << dir << p1->getIcon();
+	return *this;
+}
+
+Game::~Game()
+{
+	p1 = nullptr;
 }

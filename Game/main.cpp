@@ -5,69 +5,20 @@ int Attribute::total_attributes = 0;
 
 int main()
 {
-	system("chcp 1251");
-	//hideCursor();
-	system("cls");
+	_setmode(_fileno(stdout), _O_U16TEXT);
 
-	int top_pos = 8, left_pos = 20, length = 96, width = 20;
+	hideCursor();
 
-	GameBox gb(top_pos, left_pos, length, width);
+	int top_pos = 5, left_pos = 11, length = 110, width = 26;
 
-	COORD p_pos;
-	p_pos.X = top_pos + length / 2;
-	p_pos.Y = left_pos + width / 2;
-	gb.setPlayerPosition(p_pos);
+	Game g1(top_pos, left_pos, length, width);
 
+	g1.createPlayer(0, L'P', 0, 0, 0);
+	g1.gameBoxPrint();
 
+	bool controls = true;
 
-	gb.gameBoxPrint();
-	setCursorPosition(gb.getPlayerCords());
-	std::cout << 'P';
-
-	while (true)
-	{
-		if (_kbhit())
-		{
-			_getch();
-			int dir_int = _getch(), dir_mod;
-			char dir = 'A';
-
-			switch (dir_int)
-			{
-			case 72:
-				Sleep(50);
-				dir_int = 0;
-				dir_mod = -1;
-				dir = 'A';
-				break;
-			case 75:
-				dir = 'D';
-				dir_int = 1;
-				dir_mod = -1;
-				break;
-			case 77:
-				dir_int = 1;
-				dir_mod = 1;
-				dir = 'C';
-				break;
-			case 80:
-				dir_int = 0;
-				dir_mod = 1;
-				Sleep(50);
-				dir = 'B';
-				break;
-			default:
-				continue;
-				break;
-			}
-
-
-			gb.movePlayer('P', 1, dir, dir_int, dir_mod);
-
-		}
-	}
-
-	//Player p1(0, "Good man", 3, 3, 5);
+	g1.giveControls(controls);
 
 	return 0;
 }

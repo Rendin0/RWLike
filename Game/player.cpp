@@ -3,14 +3,18 @@
 Player::Player()
 {
 	id = 0;
-	name = "RWRW";
+	icon = L'P';
 	inventory = {};
+	player_cords.X = 1;
+	player_cords.Y = 1;
 }
 
-Player::Player(int id, std::string name, int max_hp, int hp, int damage) : Attributes(max_hp, hp, damage)
+Player::Player(int id, wchar_t icon, int max_hp, int hp, int damage) : Attributes(max_hp, hp, damage)
 {
 	this->id = id;
-	this->name = name;
+	this->icon = icon;
+	player_cords.X = 1;
+	player_cords.Y = 1;
 }
 
 Attributes::Attributes()
@@ -45,9 +49,31 @@ Player& Player::takeDamage(int value)
 	return *this;
 }
 
+COORD Player::getCords()
+{
+	return player_cords;
+}
+
+Player& Player::setCords(COORD cords)
+{
+	player_cords = cords;
+	return *this;
+}
+
+wchar_t Player::getIcon()
+{
+	return icon;
+}
+
+Player& Player::setIcon(wchar_t icon)
+{
+	this->icon = icon;
+	return *this;
+}
+
 void Player::die()
 {
-	std::cout << name << " lose.\n";
+	std::wcout << icon << " lose.\n";
 }
 
 void Player::checkState()
