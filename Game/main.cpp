@@ -26,12 +26,10 @@ int main()
 	g1.giveControls();
 
 	while (true)
-	{
-		if (_kbhit())
-			if (_getch() == 27)
-				break;
-	}
+		if (_getch() == 27)
+			break;
 
+	system("cls");
 
 	return 0;
 }

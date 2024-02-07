@@ -26,6 +26,9 @@ public:
 	virtual int getMaxHp();
 	virtual int getHp();
 	virtual int getDamage();
+	virtual int getType();
+
+	virtual Entity& attack(Entity* ent);
 
 	virtual Entity& setMaxHp(int max_hp);
 	virtual Entity& setHp(int hp);

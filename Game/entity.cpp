@@ -65,6 +65,17 @@ int Entity::getDamage()
 	return damage;
 }
 
+int Entity::getType()
+{
+	return type;
+}
+
+Entity& Entity::attack(Entity* ent)
+{
+	ent->takeDamage(damage);
+	return *this;
+}
+
 Entity& Entity::setMaxHp(int max_hp)
 {
 	this->max_hp = max_hp;
