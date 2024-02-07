@@ -39,6 +39,9 @@ Player& Player::heal()
 
 Player& Player::takeDamage(int value)
 {
+	if (value < 0)
+		return heal(abs(value));
+
 	hp -= value;
 	std::wcout << L"\u001b[41m";
 	if (!checkState())

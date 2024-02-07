@@ -83,9 +83,6 @@ Game& Game::playerCollide(wchar_t obj, Cords cords)
 	case L'·':
 		p1->takeDamage(2);
 		break;
-	case L'♀':
-		p1->heal();
-		break;
 	default:
 		break;
 	}
