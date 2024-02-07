@@ -50,6 +50,19 @@ Entity& Entity::takeDamage()
 	return takeDamage(1);
 }
 
+Entity& Entity::heal(int value)
+{
+	hp += value;
+	if (hp > max_hp)
+		hp = max_hp;
+	return *this;
+}
+
+Entity& Entity::heal()
+{
+	return heal(1);
+}
+
 int Entity::getMaxHp()
 {
 	return max_hp;

@@ -23,6 +23,9 @@ public:
 	virtual Entity& takeDamage(int value);
 	virtual Entity& takeDamage();
 
+	virtual Entity& heal(int value);
+	virtual Entity& heal();
+
 	virtual int getMaxHp();
 	virtual int getHp();
 	virtual int getDamage();

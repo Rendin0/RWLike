@@ -83,6 +83,9 @@ Game& Game::playerCollide(wchar_t obj, Cords cords)
 	case L'·':
 		p1->takeDamage(2);
 		break;
+	case L'♀':
+		p1->heal();
+		break;
 	default:
 		break;
 	}
@@ -131,7 +134,7 @@ Game& Game::moveObject(Cords new_cords, Cords old_cords)
 	return *this;
 }
 
-Game& Game::giveControls()
+Game& Game::givePlayerControls()
 {
 	player_have_controls = true;
 	while (player_have_controls)

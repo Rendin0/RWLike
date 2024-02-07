@@ -16,6 +16,27 @@ Player& Player::takeDamage()
 	return takeDamage(1);
 }
 
+Player& Player::heal(int value)
+{
+	if (hp + value > max_hp)
+		return *this;
+	hp += value;
+
+	std::wcout << L"\u001b[42m";
+	printInfo();
+	Sleep(200);
+	std::wcout << L"\u001b[1D\u001b[0m";
+	Sleep(100);
+	printInfo();
+
+	return *this;
+}
+
+Player& Player::heal()
+{
+	return heal(1);
+}
+
 Player& Player::takeDamage(int value)
 {
 	hp -= value;

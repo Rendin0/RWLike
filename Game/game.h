@@ -35,7 +35,7 @@ public:
 	Game& addObject(Cords cords, wchar_t obj);
 	Game& moveObject(Cords new_cords, Cords old_cords);
 
-	Game& giveControls();
+	Game& givePlayerControls();
 	Game& takeControls();
 
 	Game& createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp, int damage); // Types: 0(Player), 1(enemy), 2(projectyle), 3(misc)

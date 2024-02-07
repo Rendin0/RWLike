@@ -15,8 +15,11 @@ public:
 
 	Player& die() override;
 
-	Player& takeDamage() override;
 	Player& takeDamage(int value) override;
+	Player& takeDamage() override;
+
+	Player& heal(int value) override;
+	Player& heal() override;
 
 	Player& printInfo();
 };
