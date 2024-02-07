@@ -1,5 +1,6 @@
 #include "player.h"
 #include "enemy.h"
+#include "projectile.h"
 #include <io.h>
 #include <fcntl.h>
 #include <conio.h>

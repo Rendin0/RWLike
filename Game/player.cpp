@@ -65,13 +65,12 @@ Player& Player::printInfo()
 	return *this;
 }
 
-Player& Player::die()
+void Player::die()
 {
 	setCursorPosition(Cords(55, 1));
 	std::wcout << L"You (" << icon << L") lose.";
 	setCursorPosition(Cords(56, 2));
 	std::wcout << L"Esc to exit";
-	return *this;
 }
 
 bool Player::checkState()

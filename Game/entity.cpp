@@ -16,9 +16,9 @@ Entity::Entity(int type, wchar_t icon, int max_hp, int hp, int damage)
 	this->damage = damage;
 }
 
-Entity& Entity::die()
+void Entity::die()
 {
-	return *this;
+	return;
 }
 
 bool Entity::checkState()

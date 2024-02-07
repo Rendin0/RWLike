@@ -14,7 +14,7 @@ public:
 	Entity();
 	Entity(int type, wchar_t icon, int max_hp, int hp, int damage); // types: 0(player), 1(enemy), 2(projectyle), 3(misc)
 
-	virtual Entity& die();
+	virtual void die();
 	virtual bool checkState();
 
 	virtual wchar_t getIcon();

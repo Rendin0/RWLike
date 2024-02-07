@@ -13,7 +13,7 @@ public:
 	Player();
 	Player(wchar_t icon, int max_hp, int hp, int damage);
 
-	Player& die() override;
+	void die() override;
 
 	Player& takeDamage(int value) override;
 	Player& takeDamage() override;
