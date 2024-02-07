@@ -2,69 +2,18 @@
 
 Player::Player()
 {
-	id = 0;
 	icon = L'P';
 	inventory = {};
 }
 
-Player::Player(int id, wchar_t icon, int max_hp, int hp, int damage) : Attributes(max_hp, hp, damage)
+Player::Player(wchar_t icon, int max_hp, int hp, int damage) : Entity(0, icon, max_hp, hp, damage)
 {
-	this->id = id;
-	this->icon = icon;
-}
-
-Attributes::Attributes()
-{
-	max_hp = 0;
-	hp = 0;
-	damage = 0;
-}
-
-Attributes::Attributes(int max_hp, int hp, int damage)
-{
-	this->max_hp = max_hp;
-	this->hp = hp;
-	this->damage = damage;
-}
-
-int Attributes::getMaxHp()
-{
-	return max_hp;
-}
-
-int Attributes::getHp()
-{
-	return hp;
-}
-
-int Attributes::getDamage()
-{
-	return damage;
-}
-
-Attributes& Attributes::setMaxHp(int max_hp)
-{
-	this->max_hp = max_hp;
-	return *this;
-}
-
-Attributes& Attributes::setHp(int hp)
-{
-	this->hp = hp;
-	return *this;
-}
-
-Attributes& Attributes::setDamage(int damage)
-{
-	this->damage = damage;
-	return *this;
+	inventory = {};
 }
 
 Player& Player::takeDamage()
 {
-	takeDamage(1);
-
-	return *this;
+	return takeDamage(1);
 }
 
 Player& Player::takeDamage(int value)
@@ -92,33 +41,13 @@ Player& Player::printInfo()
 	return *this;
 }
 
-Cords Player::getCords()
-{
-	return Cords(x, y);
-}
-
-Player& Player::setCords(Cords cords)
-{
-	x = cords.getX();
-	y = cords.getY();
-	return *this;
-}
-
-wchar_t Player::getIcon()
-{
-	return icon;
-}
-
-Player& Player::setIcon(wchar_t icon)
-{
-	this->icon = icon;
-	return *this;
-}
-
-void Player::die()
+Player& Player::die()
 {
 	setCursorPosition(Cords(55, 1));
-	std::wcout << L"You (" << icon << L") lose.\n";
+	std::wcout << L"You (" << icon << L") lose.";
+	setCursorPosition(Cords(56, 2));
+	std::wcout << L"Esc to exit";
+	return *this;
 }
 
 bool Player::checkState()

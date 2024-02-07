@@ -43,7 +43,6 @@ GameBox::GameBox(int top_pos, int left_pos, short length, short width)
 	field.at(field.size() - 1).push_back(L'┘');
 }
 
-
 void GameBox::gameBoxPrint()
 {
 	setCursorPosition(Cords(x, y));
@@ -73,6 +72,9 @@ Game& Game::playerCollide(wchar_t obj)
 	{
 	case L'+':
 		p1->takeDamage();
+		break;
+	case L'·':
+		p1->takeDamage(2);
 		break;
 	default:
 		break;
@@ -151,12 +153,12 @@ Game& Game::takeControls()
 	return *this;
 }
 
-Game& Game::createPlayer(Cords cords, int id, wchar_t icon, int max_hp, int hp, int damage)
+Game& Game::createPlayer(Cords cords, wchar_t icon, int max_hp, int hp, int damage)
 {
 	if (p1 != nullptr)
 		return *this;
 
-	p1 = new Player(id, icon, max_hp, hp, damage);
+	p1 = new Player(icon, max_hp, hp, damage);
 	p1->setCords(cords);
 
 	field.at(p1->getY()).at(p1->getX()) = p1->getIcon();

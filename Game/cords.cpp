@@ -34,10 +34,14 @@ Cords& Cords::setY(int y)
 	return *this;
 }
 
-Cords& Cords::setCords(int x, int y)
+Cords Cords::getCords()
 {
-	this->x = x;
-	this->y = y;
+	return *this;
+}
+
+Cords& Cords::setCords(Cords cords)
+{
+	*this = cords;
 	return *this;
 }
 

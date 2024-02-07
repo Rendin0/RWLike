@@ -2,6 +2,7 @@
 
 int Item::total_items = 0;
 int Attribute::total_attributes = 0;
+int Entity::total_enityties = 0;
 
 int main()
 {
@@ -15,14 +16,22 @@ int main()
 
 	Cords p_cords = {length / 2, width / 2};
 
-	g1.createPlayer(p_cords, 0, L'$', 5, 6, 2);
+	g1.createPlayer(p_cords, L'F', 5, 6, 2);
 	g1.gameBoxPrint();
 
-	g1.addObject(Cords(50, 8), L'+');
+	g1.addObject(Cords(50, 8), L'#');
+	g1.addObject(Cords(50, 10), L'·');
+	g1.addObject(Cords(60, 10), L'+');
 
 	g1.giveControls();
 
-	while (true);
+	while (true)
+	{
+		if (_kbhit())
+			if (_getch() == 27)
+				break;
+	}
+	
 
 	return 0;
 }

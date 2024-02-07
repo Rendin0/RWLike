@@ -11,13 +11,14 @@ public:
 	Cords();
 	Cords(int x, int y);
 
-	int getX();
-	int getY();
+	virtual int getX();
+	virtual int getY();
 
-	Cords& setX(int x);
-	Cords& setY(int y);
+	virtual Cords& setX(int x);
+	virtual Cords& setY(int y);
 
-	Cords& setCords(int x, int y);
+	virtual Cords getCords();
+	virtual Cords& setCords(Cords cords);
 };
 
 void setCursorPosition(Cords cords);

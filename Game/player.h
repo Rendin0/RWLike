@@ -2,52 +2,21 @@
 #include "item.h"
 #include "cords.h"
 #include <windows.h>
+#include "entity.h"
 
-
-class Attributes
+class Player : public Entity, public Cords
 {
-
-protected:
-	int max_hp;
-	int hp;
-	int damage;
-
-	Attributes();
-	Attributes(int max_hp, int hp, int damage);
-public:
-	int getMaxHp();
-	int getHp();
-	int getDamage();
-
-	Attributes& setMaxHp(int max_hp);
-	Attributes& setHp(int hp);
-	Attributes& setDamage(int damage);
-
-};
-
-
-
-class Player : public Attributes, public Cords
-{
-	wchar_t icon;
-	int id;
-
 	std::vector<Item> inventory;
 
-	void die();
 public:
-	bool checkState();
+	bool checkState() override;
 	Player();
-	Player(int id, wchar_t icon, int max_hp, int hp, int damage);
+	Player(wchar_t icon, int max_hp, int hp, int damage);
 
-	Cords getCords();
-	Player& setCords(Cords cords);
+	Player& die() override;
 
-	wchar_t getIcon();
-	Player& setIcon(wchar_t icon);
-
-	Player& takeDamage();
-	Player& takeDamage(int value);
+	Player& takeDamage() override;
+	Player& takeDamage(int value) override;
 
 	Player& printInfo();
 };
