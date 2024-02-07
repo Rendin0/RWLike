@@ -14,9 +14,9 @@ int main()
 
 	Game g1(top_pos, left_pos, length, width);
 
-	Cords p_cords = {length / 2, width / 2};
+	Cords p_cords = { length / 2, width / 2 };
 
-	g1.createPlayer(p_cords, L'F', 5, 6, 2);
+	g1.createEntity(p_cords, 0, L'F', 5, 6, 2);
 	g1.gameBoxPrint();
 
 	g1.addObject(Cords(50, 8), L'#');
@@ -31,7 +31,7 @@ int main()
 			if (_getch() == 27)
 				break;
 	}
-	
+
 
 	return 0;
 }

@@ -153,18 +153,25 @@ Game& Game::takeControls()
 	return *this;
 }
 
-Game& Game::createPlayer(Cords cords, wchar_t icon, int max_hp, int hp, int damage)
+Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp, int damage)
 {
-	if (p1 != nullptr)
+	switch (type)
+	{
+	case 0:
+		if (p1 != nullptr)
+			return *this;
+
+		p1 = new Player(icon, max_hp, hp, damage);
+		p1->setCords(cords);
+
+		field.at(p1->getY()).at(p1->getX()) = p1->getIcon();
+
+		p1->printInfo();
+
 		return *this;
-
-	p1 = new Player(icon, max_hp, hp, damage);
-	p1->setCords(cords);
-
-	field.at(p1->getY()).at(p1->getX()) = p1->getIcon();
-
-	p1->printInfo();
-
+	default:
+		break;
+	}
 	return *this;
 }
 

@@ -35,7 +35,7 @@ public:
 	Game& giveControls();
 	Game& takeControls();
 
-	Game& createPlayer(Cords cords, wchar_t icon, int max_hp, int hp, int damage);
+	Game& createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp, int damage); // Types: 0(Player), 1(enemy), 2(projectyle), 3(misc)
 
 	Game& movePlayer(wchar_t dir, short amount);
 

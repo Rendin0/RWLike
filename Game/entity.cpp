@@ -47,8 +47,7 @@ Entity& Entity::takeDamage(int value)
 
 Entity& Entity::takeDamage()
 {
-	takeDamage(1);
-	return *this;
+	return takeDamage(1);
 }
 
 int Entity::getMaxHp()
