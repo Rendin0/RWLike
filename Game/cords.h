@@ -19,6 +19,8 @@ public:
 
 	virtual Cords getCords();
 	virtual Cords& setCords(Cords cords);
+
+	friend bool operator==(const Cords& left, const Cords& right);
 };
 
 void setCursorPosition(Cords cords);

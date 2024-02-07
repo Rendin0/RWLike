@@ -1,4 +1,5 @@
 #include "player.h"
+#include "enemy.h"
 #include <io.h>
 #include <fcntl.h>
 #include <conio.h>
@@ -20,10 +21,12 @@ void hideCursor();
 
 class Game : public GameBox
 {
-	bool have_controls;
+	bool player_have_controls;
 	Player* p1;
+	std::vector<Enemy> enemies;
 
-	Game& playerCollide(wchar_t obj);
+	Game& playerCollide(wchar_t obj, Cords cords);
+	Game& playerCollide(Entity* ent);
 
 public:
 	Game();
@@ -36,6 +39,7 @@ public:
 	Game& takeControls();
 
 	Game& createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp, int damage); // Types: 0(Player), 1(enemy), 2(projectyle), 3(misc)
+	Game& initEntity(Cords cords, Entity* ent);
 
 	Game& movePlayer(wchar_t dir, short amount);
 

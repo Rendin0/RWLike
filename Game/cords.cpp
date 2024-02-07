@@ -1,5 +1,10 @@
 #include "cords.h"
 
+bool operator==(const Cords& left, const Cords& right)
+{
+	return left.x == right.x && left.y == right.y;
+}
+
 Cords::Cords()
 {
 	x = 1;

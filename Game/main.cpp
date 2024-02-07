@@ -15,9 +15,11 @@ int main()
 	Game g1(top_pos, left_pos, length, width);
 
 	Cords p_cords = { length / 2, width / 2 };
+	Cords e_cords = { 80, 18 };
 
-	g1.createEntity(p_cords, 0, L'F', 5, 6, 2);
 	g1.gameBoxPrint();
+	g1.createEntity(p_cords, 0, L'F', 5, 6, 2);
+	g1.createEntity(e_cords, 1, L'G', 8, 8, 1);
 
 	g1.addObject(Cords(50, 8), L'#');
 	g1.addObject(Cords(50, 10), L'·');
