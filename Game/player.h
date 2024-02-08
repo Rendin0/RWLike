@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "entity.h"
 
-class Player : public Entity, public Cords
+class Player : public Entity
 {
 	std::vector<Item> inventory;
 

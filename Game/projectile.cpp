@@ -17,6 +17,11 @@ Projectile& Projectile::attack(Entity* ent)
 	return *this;
 }
 
+wchar_t Projectile::getDirrection()
+{
+	return dirrection;
+}
+
 void Projectile::die()
 {
 	// TODO

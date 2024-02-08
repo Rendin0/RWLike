@@ -11,6 +11,7 @@ int main()
 
 	hideCursor();
 
+
 	int top_pos = 5, left_pos = 11, length = 110, width = 26;
 
 	Game g1(top_pos, left_pos, length, width);
@@ -21,10 +22,10 @@ int main()
 	g1.createEntity(p_cords, 0, L'♂', 5, 5, 2);
 	g1.createEntity(Cords(80, 18), 1, L'G', 8, 8, 1);
 	g1.createEntity(Cords(50, 15), 1, L'♀', 8, 8, -1);
+	g1.createEntity(Cords(5, 13), 2, L'·', 8, 8, 1);
 
 
 	g1.addObject(Cords(50, 8), L'#');
-	g1.addObject(Cords(50, 10), L'·');
 	g1.addObject(Cords(60, 10), L'+');
 
 	g1.givePlayerControls();

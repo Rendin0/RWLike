@@ -1,6 +1,7 @@
 #pragma once
+#include "cords.h"
 
-class Entity
+class Entity : public Cords
 {
 protected:
 	int id;

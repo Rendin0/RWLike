@@ -2,7 +2,7 @@
 #include "cords.h"
 #include <string>
 
-class Enemy : public Entity, public Cords
+class Enemy : public Entity
 {
 	bool shooting;
 	bool walking;

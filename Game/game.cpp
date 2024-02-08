@@ -74,14 +74,17 @@ Game& Game::playerCollide(wchar_t obj, Cords cords)
 			playerCollide(&i);
 			break;
 		}
+	for (auto& i : projectiles)
+		if (i == cords)
+		{
+			playerCollide(&i);
+			break;
+		}
 
 	switch (obj)
 	{
 	case L'+':
 		p1->takeDamage();
-		break;
-	case L'·':
-		p1->takeDamage(2);
 		break;
 	default:
 		break;
@@ -96,18 +99,46 @@ Game& Game::playerCollide(Entity* ent)
 {
 	ent->attack(p1);
 
+	if (ent->getType() == 2)
+		for (int i = 0; i < projectiles.size(); i++)
+			if (projectiles.at(i) == *ent)
+			{
+				deleteEntity(&projectiles.at(i));
+				break;
+			}
+
 	return *this;
 }
 
+Game& Game::projectileCollide(Entity& projectile, wchar_t obj)
+{
+	if (obj == p1->getIcon())
+		playerCollide(&projectile);
+
+	deleteEntity(&projectile);
+	for (int i = 0; i < projectiles.size(); i++)
+	{
+		if (projectiles.at(i) == projectile)
+		{
+			projectiles.erase(projectiles.begin() + i);
+			projectiles_threads.at(i).detach();
+			projectiles_threads.erase(projectiles_threads.begin() + i);
+		}
+	}
+
+	return *this;
+}
 Game::Game()
 {
 	player_have_controls = false;
 	p1 = nullptr;
 	enemies = {};
+	projectiles = {};
 }
 
 Game::Game(int top_pos, int left_pos, short length, short width) : GameBox(top_pos, left_pos, length, width)
 {
+	projectiles = {};
 	enemies = {};
 	player_have_controls = false;
 	p1 = nullptr;
@@ -129,6 +160,50 @@ Game& Game::moveObject(Cords new_cords, Cords old_cords)
 	field.at(new_cords.getY()).at(new_cords.getX()) = field.at(old_cords.getY()).at(old_cords.getX());
 	field.at(old_cords.getY()).at(old_cords.getX()) = L' ';
 	return *this;
+}
+
+Game& Game::moveEntity(Cords new_cords, Entity* ent)
+{
+	field.at(ent->getY()).at(ent->getX()) = L' ';
+	setCursorPosition(Cords(ent->getX() + x, ent->getY() + y));
+	std::wcout << field.at(ent->getY()).at(ent->getX());
+
+	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
+		if (ent->getType() == 2)
+		{
+			projectileCollide(*ent, field.at(new_cords.getY()).at(new_cords.getX()));
+			return *this;
+		}
+
+	ent->setCords(new_cords);
+	initEntity(ent);
+	return *this;
+}
+
+Game& Game::projectileAi(Projectile& projectile, Game& game)
+{
+	while (true)
+	{
+		Sleep(200);
+
+		switch (projectile.getDirrection())
+		{
+		case L'A':
+			game.moveEntity(Cords(projectile.getX(), projectile.getY() - 1), &projectile);
+			break;
+		case L'B':
+			game.moveEntity(Cords(projectile.getX(), projectile.getY() + 1), &projectile);
+			break;
+		case L'C':
+			game.moveEntity(Cords(projectile.getX() + 1, projectile.getY()), &projectile);
+			break;
+		case L'D':
+			game.moveEntity(Cords(projectile.getX() - 1, projectile.getY()), &projectile);
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 Game& Game::givePlayerControls()
@@ -180,7 +255,7 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 		p1 = new Player(icon, max_hp, hp, damage);
 		p1->setCords(cords);
 
-		initEntity(p1->getCords(), p1);
+		initEntity(p1);
 
 		p1->printInfo();
 
@@ -189,8 +264,15 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 		enemies.push_back(Enemy(icon, max_hp, hp, damage));
 		enemies.at(enemies.size() - 1).setCords(cords);
 
-		initEntity(enemies.at(enemies.size() - 1).getCords(), &enemies.at(enemies.size() - 1));
+		initEntity(&enemies.at(enemies.size() - 1));
 
+		break;
+	case 2:
+		projectiles.push_back(Projectile(L'C', icon, damage));
+		projectiles.at(projectiles.size() - 1).setCords(cords);
+
+		initEntity(&projectiles.at(projectiles.size() - 1));
+		projectiles_threads.push_back(std::thread(&projectileAi, std::ref(projectiles.at(projectiles.size() - 1)), std::ref(*this)));
 		break;
 	default:
 		break;
@@ -198,11 +280,20 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 	return *this;
 }
 
-Game& Game::initEntity(Cords cords, Entity* ent)
+Game& Game::initEntity(Entity* ent)
 {
-	field.at(cords.getY()).at(cords.getX()) = ent->getIcon();
-	setCursorPosition(Cords(cords.getX() + x, cords.getY() + y));
-	std::wcout << field.at(cords.getY()).at(cords.getX());
+	field.at(ent->getY()).at(ent->getX()) = ent->getIcon();
+	setCursorPosition(Cords(ent->getX() + x, ent->getY() + y));
+	std::wcout << field.at(ent->getY()).at(ent->getX());
+
+	return *this;
+}
+
+Game& Game::deleteEntity(Entity* ent)
+{
+	field.at(ent->getY()).at(ent->getX()) = L' ';
+	setCursorPosition(Cords(ent->getX() + x, ent->getY() + y));
+	std::wcout << field.at(ent->getY()).at(ent->getX());
 
 	return *this;
 }
@@ -266,5 +357,9 @@ Game& Game::movePlayer(wchar_t dir, short amount)
 
 Game::~Game()
 {
+	for (auto& i : projectiles_threads)
+		i.detach();
+	for (auto& i : enemies_threads)
+		i.detach();
 	p1 = nullptr;
 }
