@@ -120,10 +120,8 @@ Game& Game::projectileCollide(Entity* projectile, wchar_t obj)
 	{
 		if (projectiles.at(i) == *projectile)
 		{
+			projectile->die();
 			projectiles.erase(projectiles.begin() + i);
-			//projectiles_threads.at(i).join();
-			//projectiles_threads.at(i).detach();
-			//projectiles_threads.erase(projectiles_threads.begin() + i);
 		}
 	}
 
@@ -184,7 +182,7 @@ Game& Game::moveEntity(Cords new_cords, Entity* ent)
 
 void projectileAi(Projectile* projectile, Game& game)
 {
-	while (true)
+	while (projectile->getAlive())
 	{
 		Sleep(50);
 
@@ -275,9 +273,8 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 		projectiles.at(projectiles.size() - 1).setCords(cords);
 
 		initEntity(&projectiles.at(projectiles.size() - 1));
-		std::thread tmp_thr(&projectileAi, &projectiles.at(projectiles.size() - 1), std::ref(*this));
-		//projectiles_threads.push_back(tmp_thr);
-		tmp_thr.detach();
+
+		std::thread(&projectileAi, &projectiles.at(projectiles.size() - 1), std::ref(*this)).detach();
 		break;
 	}
 	default:

@@ -24,5 +24,5 @@ wchar_t Projectile::getDirrection()
 
 void Projectile::die()
 {
-	// TODO
+	alive = false;
 }

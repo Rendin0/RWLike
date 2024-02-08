@@ -3,6 +3,7 @@
 Entity::Entity()
 {
 	id = type = max_hp = hp = damage = icon = -1;
+	alive = true;
 }
 
 Entity::Entity(int type, wchar_t icon, int max_hp, int hp, int damage)
@@ -14,10 +15,12 @@ Entity::Entity(int type, wchar_t icon, int max_hp, int hp, int damage)
 	this->max_hp = max_hp;
 	this->hp = hp;
 	this->damage = damage;
+	alive = true;
 }
 
 void Entity::die()
 {
+	alive = false;
 	return;
 }
 
@@ -81,6 +84,11 @@ int Entity::getDamage()
 int Entity::getType()
 {
 	return type;
+}
+
+bool Entity::getAlive()
+{
+	return alive;
 }
 
 Entity& Entity::attack(Entity* ent)

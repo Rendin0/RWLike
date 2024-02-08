@@ -9,6 +9,9 @@ protected:
 	wchar_t icon;
 	int max_hp, hp;
 	int damage;
+
+	bool alive;
+
 	static int total_enityties;
 
 public:
@@ -31,6 +34,7 @@ public:
 	virtual int getHp();
 	virtual int getDamage();
 	virtual int getType();
+	virtual bool getAlive();
 
 	virtual Entity& attack(Entity* ent);
 

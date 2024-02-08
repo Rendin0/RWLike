@@ -55,7 +55,6 @@ public:
 
 	Game& movePlayer(wchar_t dir, short amount); // TODO - change
 
-	
 	~Game();
 };
 
