@@ -110,24 +110,26 @@ Game& Game::playerCollide(Entity* ent)
 	return *this;
 }
 
-Game& Game::projectileCollide(Entity& projectile, wchar_t obj)
+Game& Game::projectileCollide(Entity* projectile, wchar_t obj)
 {
 	if (obj == p1->getIcon())
-		playerCollide(&projectile);
+		playerCollide(projectile);
 
-	deleteEntity(&projectile);
+	deleteEntity(projectile);
 	for (int i = 0; i < projectiles.size(); i++)
 	{
-		if (projectiles.at(i) == projectile)
+		if (projectiles.at(i) == *projectile)
 		{
 			projectiles.erase(projectiles.begin() + i);
-			projectiles_threads.at(i).detach();
-			projectiles_threads.erase(projectiles_threads.begin() + i);
+			//projectiles_threads.at(i).join();
+			//projectiles_threads.at(i).detach();
+			//projectiles_threads.erase(projectiles_threads.begin() + i);
 		}
 	}
 
 	return *this;
 }
+
 Game::Game()
 {
 	player_have_controls = false;
@@ -171,7 +173,7 @@ Game& Game::moveEntity(Cords new_cords, Entity* ent)
 	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
 		if (ent->getType() == 2)
 		{
-			projectileCollide(*ent, field.at(new_cords.getY()).at(new_cords.getX()));
+			projectileCollide(ent, field.at(new_cords.getY()).at(new_cords.getX()));
 			return *this;
 		}
 
@@ -180,11 +182,11 @@ Game& Game::moveEntity(Cords new_cords, Entity* ent)
 	return *this;
 }
 
-Game& Game::projectileAi(Projectile& projectile, Game& game)
+void Game::projectileAi(Projectile& projectile, Game& game)
 {
 	while (true)
 	{
-		Sleep(200);
+		Sleep(50);
 
 		switch (projectile.getDirrection())
 		{
@@ -268,12 +270,16 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 
 		break;
 	case 2:
+	{
 		projectiles.push_back(Projectile(L'C', icon, damage));
 		projectiles.at(projectiles.size() - 1).setCords(cords);
 
 		initEntity(&projectiles.at(projectiles.size() - 1));
-		projectiles_threads.push_back(std::thread(&projectileAi, std::ref(projectiles.at(projectiles.size() - 1)), std::ref(*this)));
+		std::thread tmp_thr(projectileAi, std::ref(projectiles.at(projectiles.size() - 1)), std::ref(*this));
+		//projectiles_threads.push_back(tmp_thr);
+		tmp_thr.detach();
 		break;
+	}
 	default:
 		break;
 	}

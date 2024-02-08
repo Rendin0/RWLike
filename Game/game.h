@@ -34,7 +34,7 @@ class Game : public GameBox
 
 	Game& playerCollide(wchar_t obj, Cords cords);
 	Game& playerCollide(Entity* ent);
-	Game& projectileCollide(Entity& projectile, wchar_t obj);
+	Game& projectileCollide(Entity* projectile, wchar_t obj);
 
 public:
 	Game();
@@ -53,9 +53,9 @@ public:
 
 	Game& deleteEntity(Entity* ent);
 
-	Game& movePlayer(wchar_t dir, short amount);
+	Game& movePlayer(wchar_t dir, short amount); // TODO - change
 
-	static Game& projectileAi(Projectile& projectile, Game& game);
+	static void projectileAi(Projectile& projectile, Game& game);
 	
 	~Game();
 };
