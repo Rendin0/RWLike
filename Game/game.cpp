@@ -182,25 +182,25 @@ Game& Game::moveEntity(Cords new_cords, Entity* ent)
 	return *this;
 }
 
-void Game::projectileAi(Projectile& projectile, Game& game)
+void projectileAi(Projectile* projectile, Game& game)
 {
 	while (true)
 	{
 		Sleep(50);
 
-		switch (projectile.getDirrection())
+		switch (projectile->getDirrection())
 		{
 		case L'A':
-			game.moveEntity(Cords(projectile.getX(), projectile.getY() - 1), &projectile);
+			game.moveEntity(Cords(projectile->getX(), projectile->getY() - 1), projectile);
 			break;
 		case L'B':
-			game.moveEntity(Cords(projectile.getX(), projectile.getY() + 1), &projectile);
+			game.moveEntity(Cords(projectile->getX(), projectile->getY() + 1), projectile);
 			break;
 		case L'C':
-			game.moveEntity(Cords(projectile.getX() + 1, projectile.getY()), &projectile);
+			game.moveEntity(Cords(projectile->getX() + 1, projectile->getY()), projectile);
 			break;
 		case L'D':
-			game.moveEntity(Cords(projectile.getX() - 1, projectile.getY()), &projectile);
+			game.moveEntity(Cords(projectile->getX() - 1, projectile->getY()), projectile);
 			break;
 		default:
 			break;
@@ -275,7 +275,7 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 		projectiles.at(projectiles.size() - 1).setCords(cords);
 
 		initEntity(&projectiles.at(projectiles.size() - 1));
-		std::thread tmp_thr(projectileAi, std::ref(projectiles.at(projectiles.size() - 1)), std::ref(*this));
+		std::thread tmp_thr(&projectileAi, &projectiles.at(projectiles.size() - 1), std::ref(*this));
 		//projectiles_threads.push_back(tmp_thr);
 		tmp_thr.detach();
 		break;

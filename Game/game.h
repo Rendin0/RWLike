@@ -55,7 +55,8 @@ public:
 
 	Game& movePlayer(wchar_t dir, short amount); // TODO - change
 
-	static void projectileAi(Projectile& projectile, Game& game);
 	
 	~Game();
 };
+
+void projectileAi(Projectile* projectile, Game& game);
