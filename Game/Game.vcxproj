@@ -130,6 +130,7 @@
     <ClCompile Include="cords.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="entity.cpp" />
+    <ClCompile Include="frame.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="cords.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="entity.h" />
+    <ClInclude Include="frame.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="main.h" />

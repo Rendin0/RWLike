@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <conio.h>
 #include <thread>
+#include "frame.h"
 
 class GameBox : public Cords
 {
