@@ -28,6 +28,8 @@ Player& Player::heal(int value)
 
 	hp += value;
 
+	// TODO:
+
 	/*FrameHandler::functions_queue.push([&] {
 		std::wcout << L"\u001b[42m";
 		});
@@ -53,9 +55,9 @@ Player& Player::takeDamage(int value)
 		return heal(abs(value));
 
 	hp -= value;
-	if (!checkState())
-	{
-		/*FrameHandler::functions_queue.push([&] {
+	if (!checkState()) // TODO:
+	{ 
+		/*FrameHandler::functions_queue.push([&] {  
 			std::wcout << L"\u001b[41m";
 			Sleep(200);
 			std::wcout << L"\u001b[1D\u001b[0m";
