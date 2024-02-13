@@ -52,5 +52,30 @@ Cords& Cords::setCords(Cords cords)
 
 void setCursorPosition(Cords cords)
 {
-		std::wcout << L"\u001b[" << cords.getY() << L";" << cords.getX() << L"H";
+	std::wcout << L"\u001b[" << cords.getY() << L";" << cords.getX() << L"H";
+}
+
+void printQueue(const std::wstring str)
+{
+	FrameHandler::functions_queue.push([=] {
+		std::wcout << str;
+		});
+}
+
+void printQueue(const wchar_t ch)
+{
+	printQueue(std::wstring(1, ch));
+}
+
+void printQueue(const std::wstring str, Cords cords)
+{
+	FrameHandler::functions_queue.push([=] {
+		setCursorPosition(cords);
+		std::wcout << str;
+		});
+}
+
+void printQueue(const wchar_t ch, Cords cords)
+{
+	printQueue(std::wstring(1, ch), cords);
 }

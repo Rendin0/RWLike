@@ -1,5 +1,6 @@
 #pragma once
 #include "frame.h"
+#include <string>
 #include <iostream>
 
 class Cords
@@ -25,3 +26,8 @@ public:
 };
 
 void setCursorPosition(Cords cords);
+
+void printQueue(const std::wstring str);
+void printQueue(const wchar_t ch);
+void printQueue(const std::wstring str, Cords cords);
+void printQueue(const wchar_t ch, Cords cords);

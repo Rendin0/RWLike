@@ -63,7 +63,7 @@ void GameBox::gameBoxPrint()
 
 void hideCursor()
 {
-	std::wcout << L"\u001b[?25l";
+	printQueue(L"\u001b[?25l");
 }
 
 Game& Game::playerCollide(wchar_t obj, Cords cords)
@@ -149,10 +149,7 @@ Game& Game::addObject(Cords cords, wchar_t obj)
 	if (field.at(cords.getY()).at(cords.getX()) != p1->getIcon())
 	{
 		field.at(cords.getY()).at(cords.getX()) = obj;
-		FrameHandler::functions_queue.push([&] {
-			setCursorPosition(Cords(cords.getX() + this->x, cords.getY() + this->y));
-			std::wcout << obj;
-			});
+		printQueue(obj, Cords(cords.getX() + this->x, cords.getY() + this->y));
 	}
 	return *this;
 }
@@ -166,13 +163,8 @@ Game& Game::moveObject(Cords new_cords, Cords old_cords)
 
 Game& Game::moveEntity(Cords new_cords, Entity* ent)
 {
-	wchar_t char_to_print = field.at(ent->getY()).at(ent->getX());
-	Cords cordss(ent->getX() + x, ent->getY() + y);
 	field.at(ent->getY()).at(ent->getX()) = L' ';
-	FrameHandler::functions_queue.push([&] {
-		setCursorPosition(cordss);
-		std::wcout << char_to_print;
-		});
+	printQueue(field.at(ent->getY()).at(ent->getX()), Cords(ent->getX() + x, ent->getY() + y));
 
 	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
 		if (ent->getType() == 2)
@@ -208,7 +200,7 @@ void projectileAi(Projectile* projectile, Game& game)
 		default:
 			break;
 		}
-		Sleep(40);
+		Sleep(60);
 	}
 }
 
@@ -292,13 +284,8 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 
 Game& Game::initEntity(Entity* ent)
 {
-	wchar_t char_to_print = field.at(ent->getY()).at(ent->getX());
-	Cords cordss(ent->getX() + x, ent->getY() + y);
 	field.at(ent->getY()).at(ent->getX()) = ent->getIcon();
-	FrameHandler::functions_queue.push([&] {
-		setCursorPosition(cordss);
-		std::wcout << char_to_print;
-		});
+	printQueue(field.at(ent->getY()).at(ent->getX()), Cords(ent->getX() + x, ent->getY() + y));
 
 	return *this;
 }
@@ -306,8 +293,8 @@ Game& Game::initEntity(Entity* ent)
 Game& Game::deleteEntity(Entity* ent)
 {
 	field.at(ent->getY()).at(ent->getX()) = L' ';
-	setCursorPosition(Cords(ent->getX() + x, ent->getY() + y));
-	std::wcout << field.at(ent->getY()).at(ent->getX());
+
+	printQueue(field.at(ent->getY()).at(ent->getX()), Cords(ent->getX() + x, ent->getY() + y));
 
 	return *this;
 }
@@ -363,9 +350,7 @@ Game& Game::movePlayer(wchar_t dir, short amount)
 		break;
 	}
 
-	setCursorPosition(previous_player_cords);
-
-	std::wcout << L" \u001b[1D\u001b[" << amount << dir << p1->getIcon();
+	printQueue(std::wstring(L" \u001b[1D\u001b[" + std::to_wstring(amount) + dir + p1->getIcon()), previous_player_cords);
 	return *this;
 }
 
