@@ -3,7 +3,7 @@
 int Item::total_items = 0;
 int Attribute::total_attributes = 0;
 int Entity::total_enityties = 0;
-std::queue<void(*)()> FrameHandler::functions_queue;
+std::queue<std::function<void()>> FrameHandler::functions_queue;
 
 int main()
 {
@@ -12,7 +12,7 @@ int main()
 
 	hideCursor();
 
-	FrameHandler fh(30);
+	std::thread fh(frameHandler, 60);
 
 	int top_pos = 5, left_pos = 11, length = 110, width = 26;
 
@@ -35,6 +35,8 @@ int main()
 	while (true)
 		if (_getch() == 27)
 			break;
+
+	fh.detach();
 
 	system("cls");
 

@@ -1,15 +1,12 @@
 #pragma once
 #include <queue>
 #include <ctime>
+#include <functional>
 
 class FrameHandler
 {
-	time_t frame_time;
-	int fps;
-
-	void frameHandler();
 public:
-	FrameHandler(int fps);
-	static std::queue<void(*)()> functions_queue;
+	static std::queue<std::function<void()>> functions_queue;
 
 };
+void frameHandler(int fps);

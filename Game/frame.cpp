@@ -1,23 +1,18 @@
 #include "frame.h"
 
-void FrameHandler::frameHandler()
+void frameHandler(int fps)
 {
+	time_t frame_time = clock();
 	while (true)
 	{
 		if (clock() - frame_time >= static_cast<double>(1000 / fps))
 		{
-			for (int i = 0; i < functions_queue.size(); i++)
+			for (int i = 0; i < FrameHandler::functions_queue.size(); i++)
 			{
-				functions_queue.front()();
-				functions_queue.pop();
+				FrameHandler::functions_queue.front()();
+				FrameHandler::functions_queue.pop();
 			}
 			frame_time = clock();
 		}
 	}
-}
-
-FrameHandler::FrameHandler(int fps)
-{
-	frame_time = clock();
-	this->fps = fps;
 }

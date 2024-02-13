@@ -22,10 +22,14 @@ Player& Player::heal(int value)
 		return *this;
 	hp += value;
 
-	std::wcout << L"\u001b[42m";
+	FrameHandler::functions_queue.push([&] {
+		std::wcout << L"\u001b[42m";
+		});
 	printInfo();
 	Sleep(200);
-	std::wcout << L"\u001b[1D\u001b[0m";
+	FrameHandler::functions_queue.push([&] {
+		std::wcout << L"\u001b[1D\u001b[0m";
+		});
 	Sleep(100);
 	printInfo();
 
@@ -43,11 +47,15 @@ Player& Player::takeDamage(int value)
 		return heal(abs(value));
 
 	hp -= value;
-	std::wcout << L"\u001b[41m";
+	FrameHandler::functions_queue.push([&] {
+		std::wcout << L"\u001b[41m";
+		});
 	if (!checkState())
 	{
 		Sleep(200);
-		std::wcout << L"\u001b[1D\u001b[0m";
+		FrameHandler::functions_queue.push([&] {
+			std::wcout << L"\u001b[1D\u001b[0m";
+			});
 		Sleep(100);
 	}
 
@@ -58,9 +66,13 @@ Player& Player::printInfo()
 {
 	setCursorPosition(Cords(1, 1));
 
-	std::wcout << "HP: " << hp << "/" << max_hp;
+	FrameHandler::functions_queue.push([&] {
+		std::wcout << "HP: " << hp << "/" << max_hp;
+		});
 	setCursorPosition(Cords(1, 2));
-	std::wcout << "Damage: " << damage;
+	FrameHandler::functions_queue.push([&] {
+		std::wcout << "Damage: " << damage;
+		});
 
 	return *this;
 }
@@ -68,9 +80,13 @@ Player& Player::printInfo()
 void Player::die()
 {
 	setCursorPosition(Cords(55, 1));
-	std::wcout << L"You (" << icon << L") lose.";
+	FrameHandler::functions_queue.push([&] {
+		std::wcout << L"You (" << icon << L") lose.";
+		});
 	setCursorPosition(Cords(56, 2));
-	std::wcout << L"Esc to exit";
+	FrameHandler::functions_queue.push([&] {
+		std::wcout << L"Esc to exit";
+		});
 }
 
 bool Player::checkState()

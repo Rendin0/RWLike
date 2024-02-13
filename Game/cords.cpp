@@ -52,5 +52,5 @@ Cords& Cords::setCords(Cords cords)
 
 void setCursorPosition(Cords cords)
 {
-	std::wcout << L"\u001b[" << cords.getY() << L";" << cords.getX() << L"H";
+		std::wcout << L"\u001b[" << cords.getY() << L";" << cords.getX() << L"H";
 }

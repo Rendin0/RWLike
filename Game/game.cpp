@@ -149,8 +149,10 @@ Game& Game::addObject(Cords cords, wchar_t obj)
 	if (field.at(cords.getY()).at(cords.getX()) != p1->getIcon())
 	{
 		field.at(cords.getY()).at(cords.getX()) = obj;
-		setCursorPosition(Cords(cords.getX() + this->x, cords.getY() + this->y));
-		std::wcout << obj;
+		FrameHandler::functions_queue.push([&] {
+			setCursorPosition(Cords(cords.getX() + this->x, cords.getY() + this->y));
+			std::wcout << obj;
+			});
 	}
 	return *this;
 }
@@ -164,9 +166,13 @@ Game& Game::moveObject(Cords new_cords, Cords old_cords)
 
 Game& Game::moveEntity(Cords new_cords, Entity* ent)
 {
+	wchar_t char_to_print = field.at(ent->getY()).at(ent->getX());
+	Cords cordss(ent->getX() + x, ent->getY() + y);
 	field.at(ent->getY()).at(ent->getX()) = L' ';
-	setCursorPosition(Cords(ent->getX() + x, ent->getY() + y));
-	std::wcout << field.at(ent->getY()).at(ent->getX());
+	FrameHandler::functions_queue.push([&] {
+		setCursorPosition(cordss);
+		std::wcout << char_to_print;
+		});
 
 	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
 		if (ent->getType() == 2)
@@ -182,10 +188,9 @@ Game& Game::moveEntity(Cords new_cords, Entity* ent)
 
 void projectileAi(Projectile* projectile, Game& game)
 {
+
 	while (projectile->getAlive())
 	{
-		Sleep(50);
-
 		switch (projectile->getDirrection())
 		{
 		case L'A':
@@ -203,6 +208,7 @@ void projectileAi(Projectile* projectile, Game& game)
 		default:
 			break;
 		}
+		Sleep(40);
 	}
 }
 
@@ -272,6 +278,7 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 		projectiles.push_back(Projectile(L'C', icon, damage));
 		projectiles.at(projectiles.size() - 1).setCords(cords);
 
+
 		initEntity(&projectiles.at(projectiles.size() - 1));
 
 		std::thread(&projectileAi, &projectiles.at(projectiles.size() - 1), std::ref(*this)).detach();
@@ -285,9 +292,13 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 
 Game& Game::initEntity(Entity* ent)
 {
+	wchar_t char_to_print = field.at(ent->getY()).at(ent->getX());
+	Cords cordss(ent->getX() + x, ent->getY() + y);
 	field.at(ent->getY()).at(ent->getX()) = ent->getIcon();
-	setCursorPosition(Cords(ent->getX() + x, ent->getY() + y));
-	std::wcout << field.at(ent->getY()).at(ent->getX());
+	FrameHandler::functions_queue.push([&] {
+		setCursorPosition(cordss);
+		std::wcout << char_to_print;
+		});
 
 	return *this;
 }

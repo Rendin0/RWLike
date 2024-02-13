@@ -1,4 +1,5 @@
 #pragma once
+#include "frame.h"
 #include <iostream>
 
 class Cords
