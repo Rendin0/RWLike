@@ -118,7 +118,7 @@ Game& Game::projectileCollide(Entity* projectile, wchar_t obj)
 	deleteEntity(projectile);
 	for (int i = 0; i < projectiles.size(); i++)
 	{
-		if (projectiles.at(i) == *projectile)
+		if (projectiles.at(i) == projectile->getCords())
 		{
 			projectile->die();
 			projectiles.erase(projectiles.begin() + i);
@@ -149,7 +149,7 @@ Game& Game::addObject(Cords cords, wchar_t obj)
 	if (field.at(cords.getY()).at(cords.getX()) != p1->getIcon())
 	{
 		field.at(cords.getY()).at(cords.getX()) = obj;
-		printQueue(obj, Cords(cords.getX() + this->x, cords.getY() + this->y));
+		printQueue(obj, cords + this->getCords());
 	}
 	return *this;
 }
@@ -164,7 +164,7 @@ Game& Game::moveObject(Cords new_cords, Cords old_cords)
 Game& Game::moveEntity(Cords new_cords, Entity* ent)
 {
 	field.at(ent->getY()).at(ent->getX()) = L' ';
-	printQueue(field.at(ent->getY()).at(ent->getX()), Cords(ent->getX() + x, ent->getY() + y));
+	printQueue(field.at(ent->getY()).at(ent->getX()), ent->getCords() + getCords());
 
 	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
 		if (ent->getType() == 2)
@@ -178,29 +178,49 @@ Game& Game::moveEntity(Cords new_cords, Entity* ent)
 	return *this;
 }
 
-void projectileAi(Projectile* projectile, Game& game)
+void projectileAi(Projectile& projectile, Game& game)
 {
-
-	while (projectile->getAlive())
+	time_t time = clock();
+	while (projectile.getAlive())
 	{
-		switch (projectile->getDirrection())
+		if (clock() - time >= 60)
 		{
-		case L'A':
-			game.moveEntity(Cords(projectile->getX(), projectile->getY() - 1), projectile);
-			break;
-		case L'B':
-			game.moveEntity(Cords(projectile->getX(), projectile->getY() + 1), projectile);
-			break;
-		case L'C':
-			game.moveEntity(Cords(projectile->getX() + 1, projectile->getY()), projectile);
-			break;
-		case L'D':
-			game.moveEntity(Cords(projectile->getX() - 1, projectile->getY()), projectile);
-			break;
-		default:
-			break;
+			switch (projectile.getDirrection())
+			{
+			case L'A':
+				game.moveEntity(Cords(projectile.getX(), projectile.getY() - 1), &projectile);
+				break;
+			case L'B':
+				game.moveEntity(Cords(projectile.getX(), projectile.getY() + 1), &projectile);
+				break;
+			case L'C':
+				game.moveEntity(Cords(projectile.getX() + 1, projectile.getY()), &projectile);
+				break;
+			case L'D':
+				game.moveEntity(Cords(projectile.getX() - 1, projectile.getY()), &projectile);
+				break;
+			default:
+				break;
+			}
+			time = clock();
 		}
-		Sleep(60);
+
+	}
+}
+
+void enemyAi(Enemy* enemy, Game& game)
+{
+	time_t time = clock();
+	while (true)
+	{
+		if (clock() - time >= 1000)
+		{
+			if (enemy->getShooting())
+			{
+				game.createEntity(enemy->getCords() - Cords(1, 0), L'D', L'·', enemy->getDamage());
+			}
+			time = clock();
+		}
 	}
 }
 
@@ -242,6 +262,17 @@ Game& Game::takeControls()
 	return *this;
 }
 
+Game& Game::createEntity(Cords cords, wchar_t dir, wchar_t icon, int damage)
+{
+	projectiles.push_back(Projectile(dir, icon, damage));
+	projectiles.at(projectiles.size() - 1).setCords(cords);
+
+	initEntity(&projectiles.at(projectiles.size() - 1));
+
+	projectiles_threads.push_back(std::thread(projectileAi, std::ref(projectiles.at(projectiles.size() - 1)), std::ref(*this)));
+	return *this;
+}
+
 Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp, int damage)
 {
 	switch (type)
@@ -260,22 +291,12 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 		return *this;
 	case 1:
 		enemies.push_back(Enemy(icon, max_hp, hp, damage));
-		enemies.at(enemies.size() - 1).setCords(cords);
+		enemies.at(enemies.size() - 1).setShooting(true).setCords(cords);
 
 		initEntity(&enemies.at(enemies.size() - 1));
 
+		enemies_threads.push_back(std::thread(enemyAi, &enemies.at(enemies.size() - 1), std::ref(*this)));
 		break;
-	case 2:
-	{
-		projectiles.push_back(Projectile(L'C', icon, damage));
-		projectiles.at(projectiles.size() - 1).setCords(cords);
-
-
-		initEntity(&projectiles.at(projectiles.size() - 1));
-
-		std::thread(&projectileAi, &projectiles.at(projectiles.size() - 1), std::ref(*this)).detach();
-		break;
-	}
 	default:
 		break;
 	}

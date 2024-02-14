@@ -1,3 +1,4 @@
+#pragma once
 #include "player.h"
 #include "enemy.h"
 #include "projectile.h"
@@ -42,6 +43,7 @@ public:
 	Game(int top_pos, int left_pos, short length, short width);
 
 	Game& addObject(Cords cords, wchar_t obj);
+	Game& createEntity(Cords cords, wchar_t dir, wchar_t icon, int damage);
 	Game& createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp, int damage); // Types: 0(Player), 1(enemy), 2(projectyle), 3(misc)
 	Game& initEntity(Entity* ent);
 
@@ -59,4 +61,5 @@ public:
 	~Game();
 };
 
-void projectileAi(Projectile* projectile, Game& game);
+void projectileAi(Projectile& projectile, Game& game);
+void enemyAi(Enemy* enemy, Game& game);

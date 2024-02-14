@@ -1,3 +1,4 @@
+#pragma once
 #include "entity.h"
 #include "cords.h"
 #include <string>
@@ -17,5 +18,8 @@ public:
 	bool getShooting();
 	bool getWalking();
 
+
 	Enemy& attack(Entity* plr) override;
+
 };
+

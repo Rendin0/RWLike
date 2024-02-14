@@ -23,6 +23,8 @@ public:
 	virtual Cords& setCords(Cords cords);
 
 	friend bool operator==(const Cords& left, const Cords& right);
+	friend Cords operator+(const Cords& left, const Cords& right);
+	friend Cords operator-(const Cords& left, const Cords& right);
 };
 
 void setCursorPosition(Cords cords);

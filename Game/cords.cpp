@@ -5,6 +5,16 @@ bool operator==(const Cords& left, const Cords& right)
 	return left.x == right.x && left.y == right.y;
 }
 
+Cords operator+(const Cords& left, const Cords& right)
+{
+	return Cords(left.x + right.x, left.y + right.y);
+}
+
+Cords operator-(const Cords& left, const Cords& right)
+{
+	return Cords(left.x - right.x, left.y - right.y);
+}
+
 Cords::Cords()
 {
 	x = 1;
@@ -41,7 +51,7 @@ Cords& Cords::setY(int y)
 
 Cords Cords::getCords()
 {
-	return *this;
+	return Cords(x, y);
 }
 
 Cords& Cords::setCords(Cords cords)
