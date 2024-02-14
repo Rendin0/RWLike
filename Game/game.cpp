@@ -269,7 +269,7 @@ Game& Game::createEntity(Cords cords, wchar_t dir, wchar_t icon, int damage)
 
 	initEntity(&projectiles.at(projectiles.size() - 1));
 
-	projectiles_threads.push_back(std::thread(projectileAi, std::ref(projectiles.at(projectiles.size() - 1)), std::ref(*this)));
+	projectiles_threads.push_back(std::thread(projectileAi, std::ref(projectiles.at(projectiles.size() - 1)), std::ref(*this)));  // TODO: After push_back links to all projectiles are changes
 	return *this;
 }
 
