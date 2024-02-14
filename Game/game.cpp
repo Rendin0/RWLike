@@ -110,20 +110,14 @@ Game& Game::playerCollide(Entity* ent)
 	return *this;
 }
 
-Game& Game::projectileCollide(Entity* projectile, wchar_t obj)
+Game& Game::projectileCollide(std::vector<Projectile> projectiles, size_t index, wchar_t obj)
 {
 	if (obj == p1->getIcon())
-		playerCollide(projectile);
+		playerCollide(&projectiles.at(index));
 
-	deleteEntity(projectile);
-	for (int i = 0; i < projectiles.size(); i++)
-	{
-		if (projectiles.at(i) == projectile->getCords())
-		{
-			projectile->die();
-			projectiles.erase(projectiles.begin() + i);
-		}
-	}
+	deleteEntity(&projectiles.at(index));
+	projectiles.at(index).die();
+	projectiles.erase(projectiles.begin() + index);
 
 	return *this;
 }
@@ -161,43 +155,52 @@ Game& Game::moveObject(Cords new_cords, Cords old_cords)
 	return *this;
 }
 
+Game& Game::moveEntity(Cords new_cords, std::vector<Projectile> projectiles, size_t index)
+{
+	field.at(projectiles.at(index).getY()).at(projectiles.at(index).getX()) = L' ';
+	printQueue(field.at(projectiles.at(index).getY()).at(projectiles.at(index).getX()), projectiles.at(index).getCords() + getCords());
+
+	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
+	{
+		projectileCollide(projectiles, index, field.at(new_cords.getY()).at(new_cords.getX()));
+		return *this;
+	}
+
+	projectiles.at(index).setCords(new_cords);
+	initEntity(&projectiles.at(index));
+	return *this;
+}
+
 Game& Game::moveEntity(Cords new_cords, Entity* ent)
 {
 	field.at(ent->getY()).at(ent->getX()) = L' ';
 	printQueue(field.at(ent->getY()).at(ent->getX()), ent->getCords() + getCords());
-
-	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
-		if (ent->getType() == 2)
-		{
-			projectileCollide(ent, field.at(new_cords.getY()).at(new_cords.getX()));
-			return *this;
-		}
 
 	ent->setCords(new_cords);
 	initEntity(ent);
 	return *this;
 }
 
-void projectileAi(Projectile& projectile, Game& game)
+void projectileAi(std::vector<Projectile>* projectiles, size_t index, Game& game)
 {
 	time_t time = clock();
-	while (projectile.getAlive())
+	while (projectiles.at(index).getAlive())
 	{
 		if (clock() - time >= 60)
 		{
-			switch (projectile.getDirrection())
+			switch (projectiles.at(index).getDirrection())
 			{
 			case L'A':
-				game.moveEntity(Cords(projectile.getX(), projectile.getY() - 1), &projectile);
+				game.moveEntity(projectiles.at(index).getCords() - Cords(0, 1), projectiles, index);
 				break;
 			case L'B':
-				game.moveEntity(Cords(projectile.getX(), projectile.getY() + 1), &projectile);
+				game.moveEntity(projectiles.at(index).getCords() + Cords(0, 1), projectiles, index);
 				break;
 			case L'C':
-				game.moveEntity(Cords(projectile.getX() + 1, projectile.getY()), &projectile);
+				game.moveEntity(projectiles.at(index).getCords() + Cords(1, 0), projectiles, index);
 				break;
 			case L'D':
-				game.moveEntity(Cords(projectile.getX() - 1, projectile.getY()), &projectile);
+				game.moveEntity(projectiles.at(index).getCords() - Cords(1, 0), projectiles, index);
 				break;
 			default:
 				break;
@@ -269,7 +272,7 @@ Game& Game::createEntity(Cords cords, wchar_t dir, wchar_t icon, int damage)
 
 	initEntity(&projectiles.at(projectiles.size() - 1));
 
-	projectiles_threads.push_back(std::thread(projectileAi, std::ref(projectiles.at(projectiles.size() - 1)), std::ref(*this)));  // TODO: After push_back links to all projectiles are changes
+	projectiles_threads.push_back(std::thread(projectileAi, projectiles, projectiles.size() - 1, std::ref(*this)));  // TODO: After push_back links to all projectiles are changes
 	return *this;
 }
 

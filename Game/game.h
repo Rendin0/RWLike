@@ -36,7 +36,7 @@ class Game : public GameBox
 
 	Game& playerCollide(wchar_t obj, Cords cords);
 	Game& playerCollide(Entity* ent);
-	Game& projectileCollide(Entity* projectile, wchar_t obj);
+	Game& projectileCollide(std::vector<Projectile> projectiles, size_t index, wchar_t obj);
 
 public:
 	Game();
@@ -49,6 +49,7 @@ public:
 
 	Game& moveObject(Cords new_cords, Cords old_cords);
 	Game& moveEntity(Cords new_cords, Entity* ent);
+	Game& moveEntity(Cords new_cords, std::vector<Projectile> projectiles, size_t index);
 
 
 	Game& givePlayerControls();
@@ -61,5 +62,5 @@ public:
 	~Game();
 };
 
-void projectileAi(Projectile& projectile, Game& game);
+void projectileAi(std::vector<Projectile>* projectiles, size_t index, Game& game);
 void enemyAi(Enemy* enemy, Game& game);
