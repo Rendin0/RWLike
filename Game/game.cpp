@@ -389,13 +389,13 @@ Game::~Game()
 	for (auto& i : enemies_threads)
 		i.detach();
 
-	for (size_t i = 0; i , projectiles.size(); i++)
+	for (size_t i = 0; i < projectiles.size(); i++)
 	{
 		delete[] projectiles.at(i);
 		projectiles.at(i) = nullptr;
 	}
 
-	for (size_t i = 0; i, enemies.size(); i++)
+	for (size_t i = 0; i < enemies.size(); i++)
 	{
 		delete[] enemies.at(i);
 		enemies.at(i) = nullptr;
