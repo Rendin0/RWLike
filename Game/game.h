@@ -27,16 +27,16 @@ class Game : public GameBox
 {
 	bool player_have_controls;
 	Player* p1;
-	std::vector<Enemy> enemies;
+	std::vector<Enemy*> enemies;
 	std::vector<std::thread> enemies_threads;
 
 
-	std::vector<Projectile> projectiles;
+	std::vector<Projectile*> projectiles;
 	std::vector<std::thread> projectiles_threads;
 
 	Game& playerCollide(wchar_t obj, Cords cords);
 	Game& playerCollide(Entity* ent);
-	Game& projectileCollide(std::vector<Projectile> projectiles, size_t index, wchar_t obj);
+	Game& projectileCollide(Entity* projectile, wchar_t obj);
 
 public:
 	Game();
@@ -49,18 +49,18 @@ public:
 
 	Game& moveObject(Cords new_cords, Cords old_cords);
 	Game& moveEntity(Cords new_cords, Entity* ent);
-	Game& moveEntity(Cords new_cords, std::vector<Projectile> projectiles, size_t index);
 
 
 	Game& givePlayerControls();
 	Game& takeControls();
 
 	Game& deleteEntity(Entity* ent);
+	Game& deleteProjectile(Projectile* projectile);
 
 	Game& movePlayer(wchar_t dir, short amount); // TODO - change
 
 	~Game();
 };
 
-void projectileAi(std::vector<Projectile>* projectiles, size_t index, Game& game);
+void projectileAi(Projectile* projectile, Game& game);
 void enemyAi(Enemy* enemy, Game& game);

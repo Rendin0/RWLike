@@ -69,15 +69,15 @@ void hideCursor()
 Game& Game::playerCollide(wchar_t obj, Cords cords)
 {
 	for (auto& i : enemies)
-		if (i == cords)
+		if (i->getCords() == cords)
 		{
-			playerCollide(&i);
+			playerCollide(i);
 			break;
 		}
 	for (auto& i : projectiles)
-		if (i == cords)
+		if (i->getCords() == cords)
 		{
-			playerCollide(&i);
+			playerCollide(i);
 			break;
 		}
 
@@ -99,25 +99,19 @@ Game& Game::playerCollide(Entity* ent)
 {
 	ent->attack(p1);
 
-	if (ent->getType() == 2)
-		for (int i = 0; i < projectiles.size(); i++)
-			if (projectiles.at(i) == *ent)
-			{
-				deleteEntity(&projectiles.at(i));
-				break;
-			}
-
 	return *this;
 }
 
-Game& Game::projectileCollide(std::vector<Projectile> projectiles, size_t index, wchar_t obj)
+Game& Game::projectileCollide(Entity* projectile, wchar_t obj)
 {
 	if (obj == p1->getIcon())
-		playerCollide(&projectiles.at(index));
+		playerCollide(projectile);
 
-	deleteEntity(&projectiles.at(index));
-	projectiles.at(index).die();
-	projectiles.erase(projectiles.begin() + index);
+	deleteEntity(projectile);
+	projectile->die();
+
+	
+
 
 	return *this;
 }
@@ -155,52 +149,45 @@ Game& Game::moveObject(Cords new_cords, Cords old_cords)
 	return *this;
 }
 
-Game& Game::moveEntity(Cords new_cords, std::vector<Projectile> projectiles, size_t index)
-{
-	field.at(projectiles.at(index).getY()).at(projectiles.at(index).getX()) = L' ';
-	printQueue(field.at(projectiles.at(index).getY()).at(projectiles.at(index).getX()), projectiles.at(index).getCords() + getCords());
-
-	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
-	{
-		projectileCollide(projectiles, index, field.at(new_cords.getY()).at(new_cords.getX()));
-		return *this;
-	}
-
-	projectiles.at(index).setCords(new_cords);
-	initEntity(&projectiles.at(index));
-	return *this;
-}
-
 Game& Game::moveEntity(Cords new_cords, Entity* ent)
 {
 	field.at(ent->getY()).at(ent->getX()) = L' ';
 	printQueue(field.at(ent->getY()).at(ent->getX()), ent->getCords() + getCords());
+
+	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
+	{
+		if (ent->getType() == 2)
+		{
+			projectileCollide(ent, field.at(new_cords.getY()).at(new_cords.getX()));
+			return *this;
+		}
+	}
 
 	ent->setCords(new_cords);
 	initEntity(ent);
 	return *this;
 }
 
-void projectileAi(std::vector<Projectile>* projectiles, size_t index, Game& game)
+void projectileAi(Projectile* projectile, Game& game)
 {
 	time_t time = clock();
-	while (projectiles.at(index).getAlive())
+	while (projectile->getAlive())
 	{
-		if (clock() - time >= 60)
+		if (clock() - time >= 100)
 		{
-			switch (projectiles.at(index).getDirrection())
+			switch (projectile->getDirrection())
 			{
 			case L'A':
-				game.moveEntity(projectiles.at(index).getCords() - Cords(0, 1), projectiles, index);
+				game.moveEntity(projectile->getCords() + Cords(0, -1), projectile);
 				break;
 			case L'B':
-				game.moveEntity(projectiles.at(index).getCords() + Cords(0, 1), projectiles, index);
+				game.moveEntity(projectile->getCords() + Cords(0, 1), projectile);
 				break;
 			case L'C':
-				game.moveEntity(projectiles.at(index).getCords() + Cords(1, 0), projectiles, index);
+				game.moveEntity(projectile->getCords() + Cords(1, 0), projectile);
 				break;
 			case L'D':
-				game.moveEntity(projectiles.at(index).getCords() - Cords(1, 0), projectiles, index);
+				game.moveEntity(projectile->getCords() + Cords(-1, 0), projectile);
 				break;
 			default:
 				break;
@@ -209,6 +196,8 @@ void projectileAi(std::vector<Projectile>* projectiles, size_t index, Game& game
 		}
 
 	}
+	
+	game.deleteProjectile(projectile);
 }
 
 void enemyAi(Enemy* enemy, Game& game)
@@ -216,7 +205,7 @@ void enemyAi(Enemy* enemy, Game& game)
 	time_t time = clock();
 	while (true)
 	{
-		if (clock() - time >= 1000)
+		if (clock() - time >= 3000)
 		{
 			if (enemy->getShooting())
 			{
@@ -267,12 +256,12 @@ Game& Game::takeControls()
 
 Game& Game::createEntity(Cords cords, wchar_t dir, wchar_t icon, int damage)
 {
-	projectiles.push_back(Projectile(dir, icon, damage));
-	projectiles.at(projectiles.size() - 1).setCords(cords);
+	projectiles.push_back(new Projectile(dir, icon, damage));
+	projectiles.at(projectiles.size() - 1)->setCords(cords);
 
-	initEntity(&projectiles.at(projectiles.size() - 1));
+	initEntity(projectiles.at(projectiles.size() - 1));
 
-	projectiles_threads.push_back(std::thread(projectileAi, projectiles, projectiles.size() - 1, std::ref(*this)));  // TODO: After push_back links to all projectiles are changes
+	projectiles_threads.push_back(std::thread(projectileAi, projectiles.at(projectiles.size() - 1), std::ref(*this)));  // TODO: After push_back links to all projectiles are changes
 	return *this;
 }
 
@@ -293,12 +282,12 @@ Game& Game::createEntity(Cords cords, int type, wchar_t icon, int max_hp, int hp
 
 		return *this;
 	case 1:
-		enemies.push_back(Enemy(icon, max_hp, hp, damage));
-		enemies.at(enemies.size() - 1).setShooting(true).setCords(cords);
+		enemies.push_back(new Enemy(icon, max_hp, hp, damage));
+		enemies.at(enemies.size() - 1)->setShooting(true).setCords(cords);
 
-		initEntity(&enemies.at(enemies.size() - 1));
+		initEntity(enemies.at(enemies.size() - 1));
 
-		enemies_threads.push_back(std::thread(enemyAi, &enemies.at(enemies.size() - 1), std::ref(*this)));
+		enemies_threads.push_back(std::thread(enemyAi, enemies.at(enemies.size() - 1), std::ref(*this)));
 		break;
 	default:
 		break;
@@ -378,11 +367,38 @@ Game& Game::movePlayer(wchar_t dir, short amount)
 	return *this;
 }
 
+Game& Game::deleteProjectile(Projectile* projectile)
+{
+	for (size_t i = 0; i < projectiles.size(); i++)
+	{
+		if (projectiles.at(i) == projectile)
+		{
+			delete[] projectile;
+			projectiles.erase(projectiles.begin() + i);
+			break;
+		}
+	}
+
+	return *this;
+}
+
 Game::~Game()
 {
 	for (auto& i : projectiles_threads)
 		i.detach();
 	for (auto& i : enemies_threads)
 		i.detach();
+
+	for (size_t i = 0; i , projectiles.size(); i++)
+	{
+		delete[] projectiles.at(i);
+		projectiles.at(i) = nullptr;
+	}
+
+	for (size_t i = 0; i, enemies.size(); i++)
+	{
+		delete[] enemies.at(i);
+		enemies.at(i) = nullptr;
+	}
 	p1 = nullptr;
 }
