@@ -29,7 +29,7 @@ public:
 
 void setCursorPosition(Cords cords);
 
-void printQueue(const std::wstring str);
-void printQueue(const wchar_t ch);
-void printQueue(const std::wstring str, Cords cords);
-void printQueue(const wchar_t ch, Cords cords);
+void printQueue(std::wstring str);
+void printQueue(wchar_t ch);
+void printQueue(std::wstring str, Cords cords);
+void printQueue(wchar_t ch, Cords cords);

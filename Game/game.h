@@ -48,8 +48,7 @@ public:
 	Game& initEntity(Entity* ent);
 
 	Game& moveObject(Cords new_cords, Cords old_cords);
-	Game& moveEntity(Cords new_cords, Entity* ent);
-
+	void moveEntity(Cords new_cords, Entity* ent);
 
 	Game& givePlayerControls();
 	Game& takeControls();

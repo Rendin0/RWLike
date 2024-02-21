@@ -99,6 +99,11 @@ Game& Game::playerCollide(Entity* ent)
 {
 	ent->attack(p1);
 
+	if (!ent->getAlive())
+	{
+		deleteEntity(ent);
+	}
+
 	return *this;
 }
 
@@ -109,9 +114,6 @@ Game& Game::projectileCollide(Entity* projectile, wchar_t obj)
 
 	deleteEntity(projectile);
 	projectile->die();
-
-	
-
 
 	return *this;
 }
@@ -149,23 +151,23 @@ Game& Game::moveObject(Cords new_cords, Cords old_cords)
 	return *this;
 }
 
-Game& Game::moveEntity(Cords new_cords, Entity* ent)
+void Game::moveEntity(Cords new_cords, Entity* ent)
 {
 	field.at(ent->getY()).at(ent->getX()) = L' ';
-	printQueue(field.at(ent->getY()).at(ent->getX()), ent->getCords() + getCords());
+	printQueue(field.at(ent->getY()).at(ent->getX()), ent->getCords() + this->getCords());
 
 	if (field.at(new_cords.getY()).at(new_cords.getX()) != L' ')
 	{
 		if (ent->getType() == 2)
 		{
 			projectileCollide(ent, field.at(new_cords.getY()).at(new_cords.getX()));
-			return *this;
+			return;
 		}
 	}
 
 	ent->setCords(new_cords);
 	initEntity(ent);
-	return *this;
+	return;
 }
 
 void projectileAi(Projectile* projectile, Game& game)
@@ -175,28 +177,30 @@ void projectileAi(Projectile* projectile, Game& game)
 	{
 		if (clock() - time >= 100)
 		{
-			switch (projectile->getDirrection())
-			{
-			case L'A':
-				game.moveEntity(projectile->getCords() + Cords(0, -1), projectile);
-				break;
-			case L'B':
-				game.moveEntity(projectile->getCords() + Cords(0, 1), projectile);
-				break;
-			case L'C':
-				game.moveEntity(projectile->getCords() + Cords(1, 0), projectile);
-				break;
-			case L'D':
-				game.moveEntity(projectile->getCords() + Cords(-1, 0), projectile);
-				break;
-			default:
-				break;
-			}
+			FrameHandler::functions_queue.push([&]() {
+				switch (projectile->getDirrection())
+				{
+				case L'A':
+					game.moveEntity(projectile->getCords() + Cords(0, -1), projectile);
+					break;
+				case L'B':
+					game.moveEntity(projectile->getCords() + Cords(0, 1), projectile);
+					break;
+				case L'C':
+					game.moveEntity(projectile->getCords() + Cords(1, 0), projectile);
+					break;
+				case L'D':
+					game.moveEntity(projectile->getCords() + Cords(-1, 0), projectile);
+					break;
+				default:
+					break;
+				}
+				});
 			time = clock();
 		}
 
 	}
-	
+
 	game.deleteProjectile(projectile);
 }
 
@@ -315,55 +319,58 @@ Game& Game::deleteEntity(Entity* ent)
 Game& Game::movePlayer(wchar_t dir, short amount)
 {
 	Cords previous_player_cords(p1->getX() + x, p1->getY() + y);
-	switch (dir)
-	{
-	case L'A':
-		if (field.at(p1->getY() - amount).at(p1->getX()) != L' ')
+
+	//FrameHandler::functions_queue.push([=, this]() {
+		switch (dir)
 		{
-			return playerCollide(field.at(p1->getY() - amount).at(p1->getX()), Cords(p1->getX(), p1->getY() - amount));
+		case L'A':
+			if (field.at(p1->getY() - amount).at(p1->getX()) != L' ')
+			{
+				return playerCollide(field.at(p1->getY() - amount).at(p1->getX()), Cords(p1->getX(), p1->getY() - amount));
+			}
+
+			moveObject(Cords(p1->getX(), p1->getY() - amount), Cords(p1->getX(), p1->getY()));
+
+			p1->setCords(Cords(p1->getX(), p1->getY() - amount));
+
+			break;
+		case L'B':
+			if (field.at(p1->getY() + amount).at(p1->getX()) != L' ')
+			{
+				return playerCollide(field.at(p1->getY() + amount).at(p1->getX()), Cords(p1->getX(), p1->getY() + amount));
+			}
+
+			moveObject(Cords(p1->getX(), p1->getY() + amount), Cords(p1->getX(), p1->getY()));
+
+			p1->setCords(Cords(p1->getX(), p1->getY() + amount));
+
+			break;
+		case L'C':
+			if (field.at(p1->getY()).at(p1->getX() + amount) != L' ')
+			{
+				return playerCollide(field.at(p1->getY()).at(p1->getX() + amount), Cords(p1->getX() + amount, p1->getY()));
+			}
+
+			moveObject(Cords(p1->getX() + amount, p1->getY()), Cords(p1->getX(), p1->getY()));
+
+			p1->setCords(Cords(p1->getX() + amount, p1->getY()));
+
+			break;
+		case L'D':
+			if (field.at(p1->getY()).at(p1->getX() - amount) != L' ')
+			{
+				return playerCollide(field.at(p1->getY()).at(p1->getX() - amount), Cords(p1->getX() - amount, p1->getY()));
+			}
+
+			moveObject(Cords(p1->getX() - amount, p1->getY()), Cords(p1->getX(), p1->getY()));
+
+			p1->setCords(Cords(p1->getX() - amount, p1->getY()));
+
+			break;
 		}
 
-		moveObject(Cords(p1->getX(), p1->getY() - amount), Cords(p1->getX(), p1->getY()));
-
-		p1->setCords(Cords(p1->getX(), p1->getY() - amount));
-
-		break;
-	case L'B':
-		if (field.at(p1->getY() + amount).at(p1->getX()) != L' ')
-		{
-			return playerCollide(field.at(p1->getY() + amount).at(p1->getX()), Cords(p1->getX(), p1->getY() + amount));
-		}
-
-		moveObject(Cords(p1->getX(), p1->getY() + amount), Cords(p1->getX(), p1->getY()));
-
-		p1->setCords(Cords(p1->getX(), p1->getY() + amount));
-
-		break;
-	case L'C':
-		if (field.at(p1->getY()).at(p1->getX() + amount) != L' ')
-		{
-			return playerCollide(field.at(p1->getY()).at(p1->getX() + amount), Cords(p1->getX() + amount, p1->getY()));
-		}
-
-		moveObject(Cords(p1->getX() + amount, p1->getY()), Cords(p1->getX(), p1->getY()));
-
-		p1->setCords(Cords(p1->getX() + amount, p1->getY()));
-
-		break;
-	case L'D':
-		if (field.at(p1->getY()).at(p1->getX() - amount) != L' ')
-		{
-			return playerCollide(field.at(p1->getY()).at(p1->getX() - amount), Cords(p1->getX() - amount, p1->getY()));
-		}
-
-		moveObject(Cords(p1->getX() - amount, p1->getY()), Cords(p1->getX(), p1->getY()));
-
-		p1->setCords(Cords(p1->getX() - amount, p1->getY()));
-
-		break;
-	}
-
-	printQueue(std::wstring(L" \u001b[1D\u001b[" + std::to_wstring(amount) + dir + p1->getIcon()), previous_player_cords);
+		printQueue(std::wstring(L" \u001b[1D\u001b[" + std::to_wstring(amount) + dir + p1->getIcon()), previous_player_cords);
+		//});
 	return *this;
 }
 

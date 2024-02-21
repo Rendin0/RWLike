@@ -21,12 +21,12 @@ int main()
 
 	g1.gameBoxPrint();
 
-	std::thread fh(frameHandler, 30);
+	std::thread fh(frameHandler, 1000);
 
 	g1.createEntity(p_cords, 0, L'♂', 5, 5, 2);
 	//g1.createEntity(Cords(80, 18), 1, L'G', 8, 8, 1);
 	//g1.createEntity(Cords(50, 15), 1, L'♀', 8, 8, -1);
-    g1.createEntity(Cords(5, 13), L'C', L'·', 1);
+    //g1.createEntity(Cords(105, 13), L'C', L'·', 1);
     g1.createEntity(Cords(5, 15), L'C', L'·', 1);
 
 
